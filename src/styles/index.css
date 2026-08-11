@@ -1,6 +1,5 @@
+@layer theme, base, antd, components, utilities;
 @import "tailwindcss";
-
-
 
 @theme {
     --color-primary: #ff6a00;
