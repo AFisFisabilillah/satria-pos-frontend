@@ -10,4 +10,5 @@ export const themeTokens = {
     colorPrimaryTextActive: '#ed6e13',
     colorInfo: '#ff6a00',
     colorPrimaryBgHover: '#e76e1d',
+    colorBgLayout: '#0b0b0b', // Default layout background
 } as const;

@@ -58,7 +58,7 @@ export default function LoginPage() {
               <div className="h-2.5 rounded-md bg-white/10 w-[60%]" />
               <div className="flex items-center justify-between mt-1 pt-2.5 border-t border-white/10 text-white/60">
                  <img src="/image/logo-satria.png" alt="SatriaPOS Logo" className="w-4 h-4 object-contain opacity-60" />
-                <span className="w-[60px] h-2.5 rounded-md bg-white/20" />
+                <span className="w-15 h-2.5 rounded-md bg-white/20" />
               </div>
             </div>
           </div>
@@ -66,7 +66,7 @@ export default function LoginPage() {
       </section>
 
       <section className="flex-1 flex items-center justify-center p-8 md:p-10 w-full md:w-[55%] lg:w-1/2" aria-label="Form login">
-        <div className="w-full max-w-[360px]">
+        <div className="w-full max-w-90">
           {/* Mobile logo */}
           <div className="flex md:hidden items-center gap-2 mb-8 font-semibold text-sm tracking-widest uppercase text-[#ff6a00]">
              <img src="/image/logo-satria.png" alt="SatriaPOS Logo" className="w-5 h-5 object-contain" />
@@ -75,7 +75,7 @@ export default function LoginPage() {
 
           <div className="mb-8">
             <Text className="text-[13px] text-slate-500 dark:text-slate-400 m-0 block mb-1">Selamat datang kembali</Text>
-            <Title level={2} className="m-0 !text-2xl font-semibold dark:text-white/90">Masuk ke akun Anda</Title>
+            <Title level={2} className="m-0 text-2xl! font-semibold dark:text-white/90">Masuk ke akun Anda</Title>
           </div>
 
           <Form<LoginRequest>
