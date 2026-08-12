@@ -1,9 +1,11 @@
-import { Layout } from "antd";
+import { Layout, type MenuProps } from "antd";
 import { useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { Navbar } from "./Navbar";
 import { ContentLayout } from "./ContentLayout";
+import { HomeOutlined, ProductOutlined } from "@ant-design/icons";
+import { Link } from "react-router";
 
 interface AdminGudangLayoutProps {
   children: ReactNode;
@@ -25,7 +27,17 @@ export const SuperAdminLayout = ({ children }: AdminGudangLayoutProps) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const menuItems: any[] = [
+  const menuItems: MenuProps['items'] = [
+     {
+      key: '/super-admin',
+      label: <Link to="/super-admin">Dashboard</Link>,
+      icon:<HomeOutlined/>
+    },
+    {
+      key: '/super-admin/product',
+      label:  <Link to="/super-admin/product">Product</Link>,
+      icon:<ProductOutlined/>
+    },
   ];
 
   return (
