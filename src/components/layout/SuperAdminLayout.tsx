@@ -29,14 +29,14 @@ export const SuperAdminLayout = ({ children }: AdminGudangLayoutProps) => {
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sidebar 
-        menuItems={menuItems} 
-        collapsed={collapsed} 
-        setCollapsed={setCollapsed} 
-        isMobile={isMobile} 
+    <Layout style={{ minHeight: '100vh' }} className="bg-slate-50! dark:bg-[#141414]! flex flex-row">
+      <Sidebar
+        menuItems={menuItems}
+        collapsed={collapsed}
+        setCollapsed={setCollapsed}
+        isMobile={isMobile}
       />
-      <Layout>
+      <Layout className="bg-transparent! flex-1 flex flex-col min-w-0">
         <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
         <ContentLayout>
           {children}

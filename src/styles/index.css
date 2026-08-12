@@ -1,5 +1,6 @@
 @layer theme, base, antd, components, utilities;
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
     --color-primary: #ff6a00;
@@ -12,4 +13,10 @@
     --color-primary-text-active: #ed6e13;
     --color-info: #ff6a00;
     --color-primary-bg-hover: #e76e1d;
+}
+
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }

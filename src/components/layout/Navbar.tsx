@@ -4,11 +4,14 @@ import {
     MenuUnfoldOutlined,
     SettingOutlined,
     UserOutlined,
+    BulbOutlined,
+    BulbFilled,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Layout } from 'antd';
 import { Link, useNavigate } from "react-router";
 import type { MenuProps } from 'antd';
 import type { User } from '../../types/auth';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const { Header } = Layout;
 
@@ -19,6 +22,7 @@ interface NavbarProps {
 
 export const Navbar = ({ setCollapsed, collapsed }: NavbarProps) => {
     const navigate = useNavigate();
+    const { isDarkMode, toggleTheme } = useTheme();
 
     // Ambil data user dari localStorage (karena SPA murni)
     const userString = localStorage.getItem('user');
@@ -96,6 +100,12 @@ export const Navbar = ({ setCollapsed, collapsed }: NavbarProps) => {
                 className="text-slate-800! dark:text-white/85! hover:bg-black/5 dark:hover:bg-white/10!"
             />
             <div className="flex w-full items-center justify-end pr-8 gap-4">
+                <Button
+                    type="text"
+                    icon={isDarkMode ? <BulbFilled /> : <BulbOutlined />}
+                    onClick={toggleTheme}
+                    className="text-slate-800! dark:text-white/85! hover:bg-black/5 dark:hover:bg-white/10! w-10 h-10"
+                />
                 <Dropdown trigger={["click"]} menu={{ items }} placement="bottomRight" rootClassName="dark:ant-dropdown-menu-dark">
                     <button type="button" className="cursor-pointer border-0 bg-transparent p-0 flex items-center hover:opacity-80 transition-opacity">
                         {user?.foto_profile ? (
