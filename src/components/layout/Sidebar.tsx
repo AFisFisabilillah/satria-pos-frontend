@@ -16,14 +16,7 @@ export const Sidebar = ({ collapsed, menuItems, isMobile, setCollapsed }: Sideba
   const siderContent = (
     <>
       <div
-        style={{
-          height: 64,
-          margin: 12,
-          borderRadius: 12,
-          background: 'linear-gradient(135deg, #111111 0%, #171717 100%)',
-          border: '1px solid #232323',
-        }}
-        className="flex items-center"
+        className="flex items-center h-16 m-3 rounded-xl bg-slate-100 dark:bg-linear-to-br dark:from-[#111111] dark:to-[#171717] border border-slate-200 dark:border-[#232323]"
       >
         <div className="w-full h-full flex items-center justify-center">
           <Image
@@ -36,8 +29,8 @@ export const Sidebar = ({ collapsed, menuItems, isMobile, setCollapsed }: Sideba
         </div>
         {(collapsed && !isMobile) || (
           <div className="mx-4 whitespace-nowrap">
-            <p className="text-lg font-bold text-white m-0">Satria<span className="text-[#ff6a00]">Pos</span></p>
-            <p className="text-white/70 text-[10px] m-0">By SatriaCorp</p>
+            <p className="text-lg font-bold text-slate-800 dark:text-white m-0">Satria<span className="text-[#ff6a00]">Pos</span></p>
+            <p className="text-slate-500 dark:text-white/70 text-[10px] m-0">By SatriaCorp</p>
           </div>
         )}
       </div>
