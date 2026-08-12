@@ -7,6 +7,7 @@ import DashboardPage from './pages/dashboard/DashboardPage';
 import { ProtectedRoute, PublicRoute } from './components/auth/ProtectedRoute';
 import { SuperAdminLayout } from './components/layout/SuperAdminLayout.tsx';
 import { ProductPage } from './pages/admin/ProductPage.tsx';
+import { ProductCreatePage } from './pages/admin/ProductCreatePage.tsx';
 
 export function AppWrapper() {
   const { isDarkMode } = useTheme();
@@ -37,6 +38,7 @@ export function AppWrapper() {
             <Route path='/super-admin' element={<SuperAdminLayout><ProtectedRoute allowedRoles={['super_admin']} /></SuperAdminLayout>} >
               <Route index element={<DashboardPage/>} />
               <Route path='product' element={<ProductPage/>} />
+              <Route path='product/create' element={<ProductCreatePage/>} />
             </Route>
 
           </Routes>

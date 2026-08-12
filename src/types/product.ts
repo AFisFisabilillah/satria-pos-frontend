@@ -27,3 +27,18 @@ export interface ProductQuery {
   size?: number;
   page?: number;
 }
+
+export interface CreateProductRequest {
+  name: string;
+  code: string;
+  description?: string;
+  image?: File | null;
+  active?: boolean;
+  unit_id: number;
+  sale_price: number;
+  category_ids?: number[];
+}
+
+export interface BulkToggleActiveRequest {
+  ids: number[];
+}

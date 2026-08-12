@@ -11,9 +11,11 @@ interface ProductTableProps {
   page: number;
   size: number;
   onTableChange: (page: number, size: number) => void;
+  selectedRowKeys: React.Key[];
+  onSelectChange: (newSelectedRowKeys: React.Key[]) => void;
 }
 
-export const ProductTable = ({ data, isLoading, page, size, onTableChange }: ProductTableProps) => {
+export const ProductTable = ({ data, isLoading, page, size, onTableChange, selectedRowKeys, onSelectChange }: ProductTableProps) => {
   const columns: TableProps<Product>['columns'] = [
     {
       title: 'Gambar',
@@ -99,6 +101,10 @@ export const ProductTable = ({ data, isLoading, page, size, onTableChange }: Pro
       rowKey="id"
       loading={isLoading}
       scroll={{ x: 'max-content' }}
+      rowSelection={{
+        selectedRowKeys,
+        onChange: onSelectChange,
+      }}
       pagination={{
         current: page,
         pageSize: size,
