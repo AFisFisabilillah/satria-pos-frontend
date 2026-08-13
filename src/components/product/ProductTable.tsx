@@ -1,7 +1,10 @@
-import { Table, Tag, Typography, Image } from 'antd';
+import { Table, Tag, Typography, Image, Dropdown, Button, App } from 'antd';
+import { MoreOutlined, EyeOutlined, EditOutlined, DeleteOutlined, SwapOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import type { Product } from '../../types/product';
 import type { PaginatedResponse } from '../../types/api';
+import { useNavigate } from 'react-router';
+import { useDeleteProduct, useBulkToggleProducts } from '../../hooks/useProducts';
 
 const { Text } = Typography;
 
@@ -16,6 +19,31 @@ interface ProductTableProps {
 }
 
 export const ProductTable = ({ data, isLoading, page, size, onTableChange, selectedRowKeys, onSelectChange }: ProductTableProps) => {
+  const navigate = useNavigate();
+  const { message, modal } = App.useApp();
+console.log(data);
+
+  const { mutate: deleteProduct } = useDeleteProduct({
+    onSuccess: () => message.success('Produk berhasil dihapus'),
+    onError: () => message.error('Gagal menghapus produk')
+  });
+
+  const { mutate: toggleActive } = useBulkToggleProducts({
+    onSuccess: () => message.success('Status produk berhasil diubah'),
+    onError: () => message.error('Gagal mengubah status produk')
+  });
+
+  const handleDelete = (id: number, name: string) => {
+    modal.confirm({
+      title: 'Hapus Produk',
+      content: `Apakah Anda yakin ingin menghapus produk "${name}"?`,
+      okText: 'Hapus',
+      cancelText: 'Batal',
+      okButtonProps: { danger: true },
+      onOk: () => deleteProduct(id),
+    });
+  };
+
   const columns: TableProps<Product>['columns'] = [
     {
       title: 'Gambar',
@@ -26,7 +54,7 @@ export const ProductTable = ({ data, isLoading, page, size, onTableChange, selec
         <Image
           width={48}
           height={48}
-          src={img ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '')}/${img}` : '/image/placeholder.png'}
+          src={img}
           fallback="/image/placeholder.png"
           className="rounded-md object-cover border border-slate-200 dark:border-[#232323]"
           preview={false}
@@ -71,14 +99,18 @@ export const ProductTable = ({ data, isLoading, page, size, onTableChange, selec
       ),
     },
     {
+      title: 'Satuan',
+      dataIndex: ['unit', 'name'],
+      key: 'unit',
+      align: 'center',
+      render: (unitName: string) => unitName ? <Tag bordered={false}>{unitName}</Tag> : <Text type="secondary">-</Text>,
+    },
+    {
       title: 'Stok',
       key: 'total_stock',
       align: 'center',
       render: (_, record) => (
-        <div className="flex items-center justify-center gap-1">
-          <Text>{record.total_stock}</Text>
-          <Text type="secondary" className="text-xs">{record.unit?.name}</Text>
-        </div>
+        <Text strong>{record.total_stock}</Text>
       ),
     },
     {
@@ -90,6 +122,54 @@ export const ProductTable = ({ data, isLoading, page, size, onTableChange, selec
         <Tag color={active ? 'success' : 'error'} bordered={false}>
           {active ? 'Aktif' : 'Nonaktif'}
         </Tag>
+      ),
+    },
+    {
+      title: 'Aksi',
+      key: 'action',
+      align: 'center',
+      fixed: 'right',
+      width: 60,
+      render: (_, record) => (
+        <Dropdown
+          trigger={['click']}
+          placement="bottomRight"
+          rootClassName="dark:ant-dropdown-menu-dark"
+          menu={{
+            items: [
+              {
+                key: 'detail',
+                label: 'Detail',
+                icon: <EyeOutlined />,
+                onClick: () => navigate(`/super-admin/product/${record.id}`)
+              },
+              {
+                key: 'update',
+                label: 'Update',
+                icon: <EditOutlined />,
+                onClick: () => navigate(`/super-admin/product/${record.id}/edit`)
+              },
+              {
+                key: 'toggle',
+                label: 'Ubah Status',
+                icon: <SwapOutlined />,
+                onClick: () => toggleActive({ ids: [record.id] })
+              },
+              {
+                type: 'divider'
+              },
+              {
+                key: 'delete',
+                label: 'Hapus',
+                icon: <DeleteOutlined />,
+                danger: true,
+                onClick: () => handleDelete(record.id, record.name)
+              }
+            ]
+          }}
+        >
+          <Button type="text" icon={<MoreOutlined />} />
+        </Dropdown>
       ),
     },
   ];

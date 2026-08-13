@@ -20,6 +20,7 @@ export interface Product {
   total_stock: number;
   unit: Unit;
   categories: Category[];
+  stock_supply_items?: StockSupplyItem[];
 }
 
 export interface ProductQuery {
@@ -41,4 +42,12 @@ export interface CreateProductRequest {
 
 export interface BulkToggleActiveRequest {
   ids: number[];
+}
+
+export interface StockSupplyItem {
+  id: number;
+  quantity_in: number;
+  quantity_remaining: number;
+  purchase_price: number;
+  expired_at: string | null;
 }

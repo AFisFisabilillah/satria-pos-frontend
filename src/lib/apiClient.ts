@@ -6,10 +6,14 @@ export const apiClient = axios.create({
     headers: { 'Content-Type': 'application/json' },
 });
 
-// Interceptor buat auto-attach token
+// Interceptor buat auto-attach token + fix Content-Type untuk FormData
 apiClient.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
     if (token) config.headers.Authorization = `Bearer ${token}`;
+    // Biarkan browser set multipart/form-data + boundary otomatis
+    if (config.data instanceof FormData) {
+        delete config.headers['Content-Type'];
+    }
     return config;
 });
 

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import {
   Form,
   Input,
@@ -11,13 +11,13 @@ import {
   App,
   Card,
   Select,
-  Divider,
-  Spin
+  Spin,
+  Image
 } from 'antd';
 import { UploadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import type { UploadFile, UploadProps } from 'antd';
 import type { AxiosError } from 'axios';
-import { useCreateProduct } from '../../hooks/useProducts';
+import { useProduct, useUpdateProduct } from '../../hooks/useProducts';
 import { useUnits, useCreateUnit } from '../../hooks/useUnits';
 import { useCategories, useCreateCategory } from '../../hooks/useCategories';
 import type { CreateProductRequest } from '../../types/product';
@@ -26,28 +26,42 @@ import { useDebounce } from 'use-debounce';
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
-export const ProductCreatePage = () => {
-  const [form] = Form.useForm();
+export const ProductUpdatePage = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { message } = App.useApp();
+  const [form] = Form.useForm();
+  
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-
   const [unitSearch, setUnitSearch] = useState('');
   const [debouncedUnitSearch] = useDebounce(unitSearch, 500);
-
   const [categorySearch, setCategorySearch] = useState('');
   const [debouncedCategorySearch] = useDebounce(categorySearch, 500);
 
   const { data: units, isLoading: isUnitsLoading } = useUnits({ search: debouncedUnitSearch });
+  const { data: product, isLoading: isProductLoading, isError: isProductError } = useProduct(id!);
+
+  useEffect(() => {
+    if (product && units) {
+      form.setFieldsValue({
+        name: product.name,
+        code: product.code,
+        sale_price: product.sale_price,
+        unit_id: product.unit?.id,
+        category_ids: product.categories?.map(c => c.id) || [],
+        active: product.active,
+        description: product.description,
+      });
+    }
+  }, [product, units, form]);
+
   const { mutate: createUnit, isPending: isCreatingUnit } = useCreateUnit({
     onSuccess: (newUnit) => {
       message.success('Unit baru berhasil ditambahkan');
       form.setFieldValue('unit_id', newUnit.id);
       setUnitSearch('');
     },
-    onError: () => {
-      message.error('Gagal menambahkan unit baru');
-    }
+    onError: () => message.error('Gagal menambahkan unit baru')
   });
 
   const { data: categories, isLoading: isCategoriesLoading } = useCategories({ search: debouncedCategorySearch });
@@ -58,18 +72,16 @@ export const ProductCreatePage = () => {
       form.setFieldValue('category_ids', [...currentCats, newCategory.id]);
       setCategorySearch('');
     },
-    onError: () => {
-      message.error('Gagal menambahkan kategori baru');
-    }
+    onError: () => message.error('Gagal menambahkan kategori baru')
   });
 
-  const { mutate: createProduct, isPending, error } = useCreateProduct({
+  const { mutate: updateProduct, isPending, error } = useUpdateProduct(id!, {
     onSuccess: () => {
-      message.success('Produk berhasil ditambahkan');
+      message.success('Produk berhasil diperbarui');
       navigate('/super-admin/product');
     },
     onError: (err: AxiosError<{ message?: string }>) => {
-      message.error(err.response?.data?.message || 'Gagal menambahkan produk');
+      message.error(err.response?.data?.message || 'Gagal memperbarui produk');
     }
   });
 
@@ -92,12 +104,13 @@ export const ProductCreatePage = () => {
 
     if (fileList.length > 0 && fileList[0].originFileObj) {
       payload.image = fileList[0].originFileObj;
-    }
-
-    createProduct(payload);
+    }    
+    
+    updateProduct(payload);
   };
 
-  const uploadProps: UploadProps = {
+
+ const uploadProps: UploadProps = {
     onRemove: () => {
       setFileList([]);
     },
@@ -120,6 +133,19 @@ export const ProductCreatePage = () => {
     listType: "picture",
   };
 
+  if (isProductLoading) {
+    return <div className="flex justify-center items-center h-64"><Spin size="large" /></div>;
+  }
+
+  if (isProductError || !product) {
+    return (
+      <div className="text-center py-10">
+        <Title level={4} className="text-red-500">Produk tidak ditemukan.</Title>
+        <Button onClick={() => navigate('/super-admin/product')}>Kembali</Button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto w-full">
       <div className="flex items-center gap-4">
@@ -129,7 +155,7 @@ export const ProductCreatePage = () => {
           type="text"
           className="bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#202020]"
         />
-        <Title level={3} className="!m-0">Tambah Produk Baru</Title>
+        <Title level={3} className="!m-0">Edit Produk: {product.name}</Title>
       </div>
 
       <Card className="dark:bg-[#141414] dark:border-[#202020] shadow-sm">
@@ -137,7 +163,6 @@ export const ProductCreatePage = () => {
           form={form}
           layout="vertical"
           onFinish={onFinish}
-          initialValues={{ active: true }}
           requiredMark={false}
           className="flex flex-col gap-2"
         >
@@ -173,7 +198,7 @@ export const ProductCreatePage = () => {
                 size="large"
                 className="w-full"
                 formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                parser={(value) => Number(value?.replace(/\Rp\s?|(\.*)/g, ''))}
+                parser={(value) => value?.replace(/\Rp\s?|(\.*)/g, '') as unknown as number}
                 placeholder="0"
                 min={0}
               />
@@ -272,12 +297,22 @@ export const ProductCreatePage = () => {
           </Form.Item>
 
           <Form.Item
-            label={<Text strong>Gambar Produk</Text>}
+            label={<Text strong>Gambar Produk (Biarkan kosong jika tidak ingin mengubah)</Text>}
             validateStatus={serverErrors?.image ? 'error' : undefined}
             help={serverErrors?.image?.[0]}
           >
+            {product.image && fileList.length === 0 && (
+              <div className="mb-3">
+                <Image
+                  width={80}
+                  height={80}
+                  src={`${product.image}`}
+                  className="rounded-lg object-cover border border-slate-200 dark:border-[#232323]"
+                />
+              </div>
+            )}
             <Upload {...uploadProps}>
-              <Button icon={<UploadOutlined />}>Pilih Gambar (Max: 2MB)</Button>
+              <Button icon={<UploadOutlined />}>Pilih Gambar Pengganti (Max: 2MB)</Button>
             </Upload>
           </Form.Item>
 
@@ -292,7 +327,7 @@ export const ProductCreatePage = () => {
               loading={isPending}
               className="bg-[#ff6a00] hover:bg-[#e55e00] border-none"
             >
-              Simpan Produk
+              Perbarui Produk
             </Button>
           </div>
         </Form>

@@ -44,3 +44,47 @@ export function useBulkToggleProducts(options?: UseCreateProductOptions) {
     },
   });
 }
+
+export function useProduct(id: number | string) {
+  return useQuery({
+    queryKey: ['products', id],
+    queryFn: () => productService.getById(id),
+    enabled: !!id,
+  });
+}
+
+interface UseUpdateProductOptions {
+  onSuccess?: () => void;
+  onError?: (error: AxiosError<any>) => void;
+}
+
+export function useUpdateProduct(id: number | string, options?: UseUpdateProductOptions) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Partial<CreateProductRequest>) => productService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products', id] });
+      options?.onSuccess?.();
+    },
+    onError: (error: AxiosError) => {
+      options?.onError?.(error);
+    },
+  });
+}
+
+export function useDeleteProduct(options?: UseCreateProductOptions) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number | string) => productService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      options?.onSuccess?.();
+    },
+    onError: (error: AxiosError) => {
+      options?.onError?.(error);
+    },
+  });
+}

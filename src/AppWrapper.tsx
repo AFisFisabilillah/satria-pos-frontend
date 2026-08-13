@@ -8,6 +8,8 @@ import { ProtectedRoute, PublicRoute } from './components/auth/ProtectedRoute';
 import { SuperAdminLayout } from './components/layout/SuperAdminLayout.tsx';
 import { ProductPage } from './pages/admin/ProductPage.tsx';
 import { ProductCreatePage } from './pages/admin/ProductCreatePage.tsx';
+import { ProductDetailPage } from './pages/admin/ProductDetailPage.tsx';
+import { ProductUpdatePage } from './pages/admin/ProductUpdatePage.tsx';
 
 export function AppWrapper() {
   const { isDarkMode } = useTheme();
@@ -39,6 +41,8 @@ export function AppWrapper() {
               <Route index element={<DashboardPage/>} />
               <Route path='product' element={<ProductPage/>} />
               <Route path='product/create' element={<ProductCreatePage/>} />
+              <Route path='product/:id/edit' element={<ProductUpdatePage/>} />
+              <Route path='product/:id' element={<ProductDetailPage/>} />
             </Route>
 
           </Routes>
