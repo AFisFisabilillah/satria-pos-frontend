@@ -38,6 +38,11 @@ export const SuperAdminLayout = ({ children }: AdminGudangLayoutProps) => {
       label:  <Link to="/super-admin/product">Product</Link>,
       icon:<ProductOutlined/>
     },
+     {
+      key: '/super-admin/unit',
+      label:  <Link to="/super-admin/unit">Unit</Link>,
+      icon:<ProductOutlined/>
+    },
   ];
 
   return (

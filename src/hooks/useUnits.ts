@@ -29,3 +29,18 @@ export function useCreateUnit(options?: UseCreateUnitOptions) {
     },
   });
 }
+
+export function useDeleteUnit(options?: { onSuccess?: () => void; onError?: (error: AxiosError) => void }) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => unitService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['units'] });
+      options?.onSuccess?.();
+    },
+    onError: (error: AxiosError) => {
+      options?.onError?.(error);
+    },
+  });
+}

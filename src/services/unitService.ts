@@ -7,4 +7,7 @@ export const unitService = {
 
   create: (data: CreateUnitRequest) =>
     apiClient.post<Unit>('/units', data).then((res) => res.data),
+
+  delete: (id: number) =>
+    apiClient.delete<{ message: string }>(`/units/${id}`).then((res) => res.data),
 };

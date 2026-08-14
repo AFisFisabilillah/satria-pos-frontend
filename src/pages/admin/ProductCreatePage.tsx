@@ -11,7 +11,6 @@ import {
   App,
   Card,
   Select,
-  Divider,
   Spin
 } from 'antd';
 import { UploadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
@@ -129,7 +128,7 @@ export const ProductCreatePage = () => {
           type="text"
           className="bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#202020]"
         />
-        <Title level={3} className="!m-0">Tambah Produk Baru</Title>
+        <Title level={3} className="m-0!">Tambah Produk Baru</Title>
       </div>
 
       <Card className="dark:bg-[#141414] dark:border-[#202020] shadow-sm">
