@@ -7,4 +7,7 @@ export const categoryService = {
 
   create: (data: CreateCategoryRequest) =>
     apiClient.post<{ data: Category }>('/categories', data).then((res) => res.data.data),
+
+  delete: (id: number) =>
+    apiClient.delete<{ message: string }>(`/categories/${id}`).then((res) => res.data),
 };

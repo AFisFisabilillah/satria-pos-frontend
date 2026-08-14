@@ -11,6 +11,7 @@ import { ProductCreatePage } from './pages/admin/ProductCreatePage.tsx';
 import { ProductDetailPage } from './pages/admin/ProductDetailPage.tsx';
 import { ProductUpdatePage } from './pages/admin/ProductUpdatePage.tsx';
 import { UnitPage } from './pages/admin/UnitPage.tsx';
+import { CategoryPage } from './pages/admin/CategoryPage.tsx';
 
 export function AppWrapper() {
   const { isDarkMode } = useTheme();
@@ -45,6 +46,7 @@ export function AppWrapper() {
               <Route path='product/:id/edit' element={<ProductUpdatePage/>} />
               <Route path='product/:id' element={<ProductDetailPage/>} />
               <Route path='unit' element={<UnitPage/>} />
+              <Route path='category' element={<CategoryPage/>} />
             </Route>
 
           </Routes>

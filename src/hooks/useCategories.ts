@@ -29,3 +29,18 @@ export function useCreateCategory(options?: UseCreateCategoryOptions) {
     },
   });
 }
+
+export function useDeleteCategory(options?: { onSuccess?: () => void; onError?: (error: AxiosError) => void }) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => categoryService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      options?.onSuccess?.();
+    },
+    onError: (error: AxiosError) => {
+      options?.onError?.(error);
+    },
+  });
+}
