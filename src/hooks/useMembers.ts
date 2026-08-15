@@ -21,3 +21,15 @@ export function useCreateMember(options?: { onSuccess?: () => void; onError?: (e
     onError: (error: AxiosError<any>) => options?.onError?.(error),
   });
 }
+
+export function useUpdateMember(id: number | string, options?: { onSuccess?: () => void; onError?: (error: AxiosError<any>) => void }) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: Partial<CreateMemberRequest>) => memberService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['members'] });
+      options?.onSuccess?.();
+    },
+    onError: (error: AxiosError<any>) => options?.onError?.(error),
+  });
+}

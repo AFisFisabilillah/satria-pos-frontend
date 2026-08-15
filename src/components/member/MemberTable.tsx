@@ -1,5 +1,7 @@
-import { Table, Tag } from 'antd';
+import { Table, Tag, Dropdown, Button } from 'antd';
+import { MoreOutlined, EyeOutlined, EditOutlined, RetweetOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { TablePaginationConfig } from 'antd/es/table';
+import type { MenuProps } from 'antd';
 import type { PaginatedResponse } from '../../types/api';
 import type { Member } from '../../types/member';
 
@@ -9,6 +11,7 @@ interface MemberTableProps {
   page: number;
   size: number;
   onTableChange: (page: number, size: number) => void;
+  onAction?: (action: 'detail' | 'edit' | 'toggle_status' | 'delete', record: Member) => void;
 }
 
 export const MemberTable = ({
@@ -17,6 +20,7 @@ export const MemberTable = ({
   page,
   size,
   onTableChange,
+  onAction,
 }: MemberTableProps) => {
 
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -60,6 +64,51 @@ export const MemberTable = ({
           {active ? 'Aktif' : 'Nonaktif'}
         </Tag>
       )
+    },
+    {
+      title: 'Aksi',
+      width: 80,
+      render: (_: unknown, record: Member) => {
+        const items: MenuProps['items'] = [
+          {
+            key: 'detail',
+            icon: <EyeOutlined />,
+            label: 'Detail',
+          },
+          {
+            key: 'edit',
+            icon: <EditOutlined />,
+            label: 'Edit',
+          },
+          {
+            key: 'toggle_status',
+            icon: <RetweetOutlined />,
+            label: 'Ubah Status',
+          },
+          {
+            type: 'divider',
+          },
+          {
+            key: 'delete',
+            icon: <DeleteOutlined />,
+            danger: true,
+            label: 'Hapus',
+          },
+        ];
+
+        return (
+          <Dropdown
+            menu={{
+              items,
+              onClick: ({ key }) => onAction?.(key as any, record)
+            }}
+            trigger={['click']}
+            placement="bottomRight"
+          >
+            <Button type="text" icon={<MoreOutlined />} />
+          </Dropdown>
+        );
+      },
     },
   ];
 

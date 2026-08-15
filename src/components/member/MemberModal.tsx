@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react';
 import { Modal, Form, Input, Button, App, Switch } from 'antd';
 import type { AxiosError } from 'axios';
-import { useCreateMember } from '../../hooks/useMembers';
-import type { CreateMemberRequest } from '../../types/member';
+import { useCreateMember, useUpdateMember } from '../../hooks/useMembers';
+import type { Member, CreateMemberRequest } from '../../types/member';
 
 interface MemberModalProps {
   open: boolean;
   onCancel: () => void;
+  initialData?: Member | null;
 }
 
-export const MemberModal = ({ open, onCancel }: MemberModalProps) => {
+export const MemberModal = ({ open, onCancel, initialData }: MemberModalProps) => {
   const [form] = Form.useForm();
   const { message } = App.useApp();
 
   const [serverErrors, setServerErrors] = useState<Record<string, string[]>>({});
+
+  const isEdit = !!initialData;
 
   const handleClose = () => {
     setServerErrors({});
@@ -36,19 +39,47 @@ export const MemberModal = ({ open, onCancel }: MemberModalProps) => {
     }
   });
 
+  const { mutate: updateMember, isPending: isUpdating } = useUpdateMember(initialData?.id || '', {
+    onSuccess: () => {
+      message.success('Member berhasil diubah');
+      handleClose();
+    },
+    onError: (err: AxiosError<{ errors?: Record<string, string[]>; message?: string }>) => {
+      const errors = err.response?.data?.errors;
+      if (errors) {
+        setServerErrors(errors);
+      } else {
+        message.error(err.response?.data?.message || 'Gagal mengubah member');
+      }
+    }
+  });
+
   useEffect(() => {
     if (open) {
-      form.setFieldsValue({ active: true });
+      if (initialData) {
+        form.setFieldsValue({
+          name: initialData.name,
+          phone: initialData.phone,
+          email: initialData.email,
+          active: initialData.active,
+        });
+      } else {
+        form.setFieldsValue({ active: true });
+      }
     }
-  }, [open, form]);
+  }, [open, initialData, form]);
 
   const onFinish = (values: CreateMemberRequest) => {
-    createMember(values);
+    if (isEdit) {
+      updateMember(values);
+    } else {
+      createMember(values);
+    }
   };
 
   return (
     <Modal
-      title="Tambah Member Baru"
+      title={isEdit ? 'Edit Member' : 'Tambah Member Baru'}
       open={open}
       onCancel={handleClose}
       footer={null}
@@ -105,11 +136,11 @@ export const MemberModal = ({ open, onCancel }: MemberModalProps) => {
           <Button
             type="primary"
             htmlType="submit"
-            loading={isCreating}
+            loading={isCreating || isUpdating}
             size="large"
             className="bg-[#ff6a00] hover:bg-[#e55e00] border-none"
           >
-            Simpan
+            {isEdit ? 'Simpan Perubahan' : 'Simpan'}
           </Button>
         </div>
       </Form>

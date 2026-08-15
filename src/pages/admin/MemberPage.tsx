@@ -5,6 +5,7 @@ import { useDebounce } from 'use-debounce';
 import { useMembers } from '../../hooks/useMembers';
 import { MemberTable } from '../../components/member/MemberTable';
 import { MemberModal } from '../../components/member/MemberModal';
+import type { Member } from '../../types/member';
 
 const { Title, Text } = Typography;
 
@@ -21,6 +22,7 @@ export const MemberPage = () => {
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState<Member | null>(null);
 
   const { data, isLoading } = useMembers({
     name: debouncedSearch,
@@ -44,6 +46,13 @@ export const MemberPage = () => {
     setPage(1);
   };
 
+  const handleAction = (action: string, record: Member) => {
+    if (action === 'edit') {
+      setEditingMember(record);
+      setIsModalOpen(true);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -51,7 +60,10 @@ export const MemberPage = () => {
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setEditingMember(null);
+            setIsModalOpen(true);
+          }}
           className="bg-[#ff6a00] hover:bg-[#e55e00] border-none"
         >
           Tambah Member
@@ -120,12 +132,14 @@ export const MemberPage = () => {
           page={page}
           size={size}
           onTableChange={handleTableChange}
+          onAction={handleAction}
         />
       </div>
 
       <MemberModal
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
+        initialData={editingMember}
       />
     </div>
   );
