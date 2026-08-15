@@ -13,6 +13,7 @@ import { ProductUpdatePage } from './pages/admin/ProductUpdatePage.tsx';
 import { UnitPage } from './pages/admin/UnitPage.tsx';
 import { CategoryPage } from './pages/admin/CategoryPage.tsx';
 import { SupplierPage } from './pages/admin/SupplierPage.tsx';
+import { MemberPage } from './pages/admin/MemberPage.tsx';
 
 export function AppWrapper() {
   const { isDarkMode } = useTheme();
@@ -49,6 +50,7 @@ export function AppWrapper() {
               <Route path='unit' element={<UnitPage/>} />
               <Route path='category' element={<CategoryPage/>} />
               <Route path='supplier' element={<SupplierPage/>} />
+              <Route path='member' element={<MemberPage/>} />
             </Route>
 
           </Routes>
