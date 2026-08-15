@@ -10,7 +10,7 @@ export function useSuppliers(params?: SupplierQuery) {
   });
 }
 
-export function useCreateSupplier(options?: { onSuccess?: () => void; onError?: (error: AxiosError) => void }) {
+export function useCreateSupplier(options?: { onSuccess?: () => void; onError?: (error: AxiosError<any>) => void }) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateSupplierRequest) => supplierService.create(data),
@@ -22,7 +22,7 @@ export function useCreateSupplier(options?: { onSuccess?: () => void; onError?: 
   });
 }
 
-export function useUpdateSupplier(id: number | string, options?: { onSuccess?: () => void; onError?: (error: AxiosError) => void }) {
+export function useUpdateSupplier(id: number | string, options?: { onSuccess?: () => void; onError?: (error: AxiosError<any>) => void }) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: Partial<CreateSupplierRequest>) => supplierService.update(id, data),

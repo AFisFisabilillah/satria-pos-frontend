@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { Modal, Form, Input, Button, App } from 'antd';
 import type { AxiosError } from 'axios';
 import { useCreateSupplier, useUpdateSupplier } from '../../hooks/useSuppliers';
-import type { Supplier } from '../../types/supplier';
+import { SelectProvince } from '../ui/SelectProvince';
+import { SelectCity } from '../ui/SelectCity';
+import type { Supplier, CreateSupplierRequest } from '../../types/supplier';
 
 interface SupplierModalProps {
   open: boolean;
@@ -15,17 +17,23 @@ export const SupplierModal = ({ open, onCancel, initialData }: SupplierModalProp
   const { message } = App.useApp();
 
   const [serverErrors, setServerErrors] = useState<Record<string, string[]>>({});
+  const [selectedProvinceId, setSelectedProvinceId] = useState<string | undefined>();
 
   const isEdit = !!initialData;
+
+  const handleClose = () => {
+    setServerErrors({});
+    form.resetFields();
+    setSelectedProvinceId(undefined);
+    onCancel();
+  };
 
   const { mutate: createSupplier, isPending: isCreating } = useCreateSupplier({
     onSuccess: () => {
       message.success('Supplier berhasil ditambahkan');
-      form.resetFields();
-      setServerErrors({});
-      onCancel();
+      handleClose();
     },
-    onError: (err: AxiosError<any>) => {
+    onError: (err: AxiosError<{ errors?: Record<string, string[]>; message?: string }>) => {
       const errors = err.response?.data?.errors;
       if (errors) {
         setServerErrors(errors);
@@ -38,11 +46,9 @@ export const SupplierModal = ({ open, onCancel, initialData }: SupplierModalProp
   const { mutate: updateSupplier, isPending: isUpdating } = useUpdateSupplier(initialData?.id || '', {
     onSuccess: () => {
       message.success('Supplier berhasil diubah');
-      form.resetFields();
-      setServerErrors({});
-      onCancel();
+      handleClose();
     },
-    onError: (err: AxiosError<any>) => {
+    onError: (err: AxiosError<{ errors?: Record<string, string[]>; message?: string }>) => {
       const errors = err.response?.data?.errors;
       if (errors) {
         setServerErrors(errors);
@@ -54,16 +60,14 @@ export const SupplierModal = ({ open, onCancel, initialData }: SupplierModalProp
 
   useEffect(() => {
     if (open) {
-      setServerErrors({});
       if (initialData) {
         form.setFieldsValue(initialData);
-      } else {
-        form.resetFields();
+        setSelectedProvinceId(undefined); // Force re-select for now
       }
     }
   }, [open, initialData, form]);
 
-  const onFinish = (values: any) => {
+  const onFinish = (values: CreateSupplierRequest) => {
     if (isEdit) {
       updateSupplier(values);
     } else {
@@ -75,7 +79,7 @@ export const SupplierModal = ({ open, onCancel, initialData }: SupplierModalProp
     <Modal
       title={isEdit ? 'Edit Supplier' : 'Tambah Supplier Baru'}
       open={open}
-      onCancel={onCancel}
+      onCancel={handleClose}
       footer={null}
       destroyOnClose
     >
@@ -117,23 +121,28 @@ export const SupplierModal = ({ open, onCancel, initialData }: SupplierModalProp
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
           <Form.Item
-            name="city"
-            label="Kota"
-            rules={[{ required: true, message: 'Kota wajib diisi' }]}
-            validateStatus={serverErrors.city ? 'error' : undefined}
-            help={serverErrors.city?.[0]}
-          >
-            <Input placeholder="Contoh: Bekasi" size="large" />
-          </Form.Item>
-
-          <Form.Item
             name="province"
             label="Provinsi"
             rules={[{ required: true, message: 'Provinsi wajib diisi' }]}
             validateStatus={serverErrors.province ? 'error' : undefined}
             help={serverErrors.province?.[0]}
           >
-            <Input placeholder="Contoh: Jawa Barat" size="large" />
+            <SelectProvince
+              onChange={(_, opt) => {
+                setSelectedProvinceId(opt?.id);
+                form.setFieldValue('city', undefined); // Reset city when province changes
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="city"
+            label="Kota"
+            rules={[{ required: true, message: 'Kota wajib diisi' }]}
+            validateStatus={serverErrors.city ? 'error' : undefined}
+            help={serverErrors.city?.[0]}
+          >
+            <SelectCity provinceId={selectedProvinceId} />
           </Form.Item>
         </div>
 
@@ -148,7 +157,7 @@ export const SupplierModal = ({ open, onCancel, initialData }: SupplierModalProp
         </Form.Item>
 
         <div className="flex justify-end gap-2 mt-6">
-          <Button onClick={onCancel} size="large">Batal</Button>
+          <Button onClick={handleClose} size="large">Batal</Button>
           <Button
             type="primary"
             htmlType="submit"
