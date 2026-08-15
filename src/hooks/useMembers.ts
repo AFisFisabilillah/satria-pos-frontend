@@ -41,3 +41,15 @@ export function useUpdateMember(id: number | string, options?: { onSuccess?: () 
     onError: (error: AxiosError<any>) => options?.onError?.(error),
   });
 }
+
+export function useDeleteMember(options?: { onSuccess?: () => void; onError?: (error: AxiosError<any>) => void }) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number | string) => memberService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['members'] });
+      options?.onSuccess?.();
+    },
+    onError: (error: AxiosError<any>) => options?.onError?.(error),
+  });
+}

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Typography, Input, Select, InputNumber, Button } from 'antd';
+import { Typography, Input, Select, InputNumber, Button, App } from 'antd';
 import { useNavigate } from 'react-router';
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import { useDebounce } from 'use-debounce';
-import { useMembers } from '../../hooks/useMembers';
+import { useMembers, useDeleteMember } from '../../hooks/useMembers';
 import { MemberTable } from '../../components/member/MemberTable';
 import { MemberModal } from '../../components/member/MemberModal';
 import type { Member } from '../../types/member';
@@ -12,6 +12,7 @@ const { Title, Text } = Typography;
 
 export const MemberPage = () => {
   const navigate = useNavigate();
+  const { message, modal } = App.useApp();
   const [searchText, setSearchText] = useState('');
   const [debouncedSearch] = useDebounce(searchText, 500);
 
@@ -35,6 +36,11 @@ export const MemberPage = () => {
     size,
   });
 
+  const { mutate: deleteMember } = useDeleteMember({
+    onSuccess: () => message.success('Member berhasil dihapus'),
+    onError: () => message.error('Gagal menghapus member'),
+  });
+
   const handleTableChange = (newPage: number, newSize: number) => {
     setPage(newPage);
     if (newSize !== size) {
@@ -54,6 +60,15 @@ export const MemberPage = () => {
       setIsModalOpen(true);
     } else if (action === 'detail') {
       navigate(`/super-admin/member/${record.id}`);
+    } else if (action === 'delete') {
+      modal.confirm({
+        title: 'Hapus member ini?',
+        content: `Apakah Anda yakin ingin menghapus member "${record.name}"? Data yang sudah dihapus tidak dapat dikembalikan.`,
+        okText: 'Hapus',
+        okType: 'danger',
+        cancelText: 'Batal',
+        onOk: () => deleteMember(record.id)
+      });
     }
   };
 
