@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Typography, Input, Select, InputNumber, Button } from 'antd';
+import { useNavigate } from 'react-router';
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import { useDebounce } from 'use-debounce';
 import { useMembers } from '../../hooks/useMembers';
@@ -10,6 +11,7 @@ import type { Member } from '../../types/member';
 const { Title, Text } = Typography;
 
 export const MemberPage = () => {
+  const navigate = useNavigate();
   const [searchText, setSearchText] = useState('');
   const [debouncedSearch] = useDebounce(searchText, 500);
 
@@ -50,6 +52,8 @@ export const MemberPage = () => {
     if (action === 'edit') {
       setEditingMember(record);
       setIsModalOpen(true);
+    } else if (action === 'detail') {
+      navigate(`/super-admin/member/${record.id}`);
     }
   };
 

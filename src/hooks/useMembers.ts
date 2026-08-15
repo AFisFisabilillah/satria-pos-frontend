@@ -10,6 +10,14 @@ export function useMembers(params?: MemberQuery) {
   });
 }
 
+export function useMember(id: number | string) {
+  return useQuery({
+    queryKey: ['members', id],
+    queryFn: () => memberService.getById(id),
+    enabled: !!id,
+  });
+}
+
 export function useCreateMember(options?: { onSuccess?: () => void; onError?: (error: AxiosError<any>) => void }) {
   const queryClient = useQueryClient();
   return useMutation({

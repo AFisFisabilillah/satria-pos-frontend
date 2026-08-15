@@ -13,4 +13,7 @@ export const memberService = {
 
   update: (id: number | string, data: Partial<CreateMemberRequest>) =>
     apiClient.put<{ data: Member }>(`/members/${id}`, data).then((res) => res.data.data),
+
+  getById: (id: number | string) =>
+    apiClient.get<{ data: Member }>(`/members/${id}`).then((res) => res.data.data),
 };
