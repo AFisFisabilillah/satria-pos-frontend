@@ -16,6 +16,7 @@ import { SupplierPage } from './pages/admin/SupplierPage.tsx';
 import { MemberPage } from './pages/admin/MemberPage.tsx';
 import { MemberDetailPage } from './pages/admin/MemberDetailPage.tsx';
 import { StockSupplyPage } from './pages/admin/StockSupplyPage.tsx';
+import { StockSupplyCreatePage } from './pages/admin/stock-supply/StockSupplyCreatePage.tsx';
 
 export function AppWrapper() {
   const { isDarkMode } = useTheme();
@@ -55,6 +56,7 @@ export function AppWrapper() {
               <Route path='member' element={<MemberPage/>} />
               <Route path='member/:id' element={<MemberDetailPage/>} />
               <Route path='stock-supply' element={<StockSupplyPage/>} />
+              <Route path='stock-supply/create' element={<StockSupplyCreatePage/>} />
             </Route>
 
           </Routes>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Typography, Input, Button, DatePicker } from 'antd';
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import { useDebounce } from 'use-debounce';
@@ -11,6 +12,7 @@ const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 
 export const StockSupplyPage = () => {
+  const navigate = useNavigate();
   const [searchText, setSearchText] = useState('');
   const [debouncedSearch] = useDebounce(searchText, 500);
 
@@ -53,6 +55,7 @@ export const StockSupplyPage = () => {
         <Button
           type="primary"
           icon={<PlusOutlined />}
+          onClick={() => navigate('/super-admin/stock-supply/create')}
           className="bg-[#ff6a00] hover:bg-[#e55e00] border-none"
         >
           Tambah Stock Supply

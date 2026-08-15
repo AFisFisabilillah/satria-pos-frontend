@@ -15,3 +15,17 @@ export interface StockSupplyQuery {
   size?: number;
   page?: number;
 }
+
+export interface StockSupplyProductPayload {
+  product_id: number;
+  quantity_in: number;
+  purchase_price: number;
+  expired_date?: string;
+}
+
+export interface CreateStockSupplyRequest {
+  suplier_id?: number;
+  invoice_number?: string;
+  notes?: string;
+  products: StockSupplyProductPayload[];
+}
