@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Typography, Input, Select, InputNumber } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Typography, Input, Select, InputNumber, Button } from 'antd';
+import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import { useDebounce } from 'use-debounce';
 import { useMembers } from '../../hooks/useMembers';
 import { MemberTable } from '../../components/member/MemberTable';
+import { MemberModal } from '../../components/member/MemberModal';
 
 const { Title, Text } = Typography;
 
@@ -19,6 +20,7 @@ export const MemberPage = () => {
 
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data, isLoading } = useMembers({
     name: debouncedSearch,
@@ -46,6 +48,14 @@ export const MemberPage = () => {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <Title level={3} className="!m-0">Data Member</Title>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => setIsModalOpen(true)}
+          className="bg-[#ff6a00] hover:bg-[#e55e00] border-none"
+        >
+          Tambah Member
+        </Button>
       </div>
 
       <div className="bg-white dark:bg-[#141414] p-5 rounded-xl border border-slate-200 dark:border-[#202020] shadow-sm flex flex-col gap-5">
@@ -112,6 +122,11 @@ export const MemberPage = () => {
           onTableChange={handleTableChange}
         />
       </div>
+
+      <MemberModal
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

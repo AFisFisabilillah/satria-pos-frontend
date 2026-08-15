@@ -10,6 +10,13 @@ export interface Member {
   updated_at: string;
 }
 
+export interface CreateMemberRequest {
+  name: string;
+  phone?: string;
+  email?: string;
+  active?: boolean;
+}
+
 export interface MemberQuery {
   name?: string;
   active?: boolean | string;
