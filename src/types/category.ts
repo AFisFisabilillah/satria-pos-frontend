@@ -5,6 +5,8 @@ export interface Category {
 
 export interface CategoryQuery {
   search?: string;
+  page?: number;
+  size?: number;
 }
 
 export interface CreateCategoryRequest {

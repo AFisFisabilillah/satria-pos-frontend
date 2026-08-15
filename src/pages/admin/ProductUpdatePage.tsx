@@ -255,7 +255,7 @@ export const ProductUpdatePage = () => {
                 loading={isCategoriesLoading || isCreatingCategory}
                 onSearch={setCategorySearch}
                 filterOption={false}
-                options={categories?.map((c) => ({ label: c.name, value: c.id })) || []}
+                options={categories?.data?.map((c) => ({ label: c.name, value: c.id })) || []}
                 notFoundContent={
                   isCategoriesLoading ? (
                     <div className="p-2 text-center"><Spin size="small" /></div>

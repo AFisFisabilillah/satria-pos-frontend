@@ -30,6 +30,21 @@ export function useCreateCategory(options?: UseCreateCategoryOptions) {
   });
 }
 
+export function useUpdateCategory(id: number | string, options?: { onSuccess?: () => void; onError?: (error: AxiosError<any>) => void }) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Partial<CreateCategoryRequest>) => categoryService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      options?.onSuccess?.();
+    },
+    onError: (error: AxiosError<any>) => {
+      options?.onError?.(error);
+    },
+  });
+}
+
 export function useDeleteCategory(options?: { onSuccess?: () => void; onError?: (error: AxiosError) => void }) {
   const queryClient = useQueryClient();
 
