@@ -5,6 +5,8 @@ export interface Unit {
 
 export interface UnitQuery {
   search?: string;
+  page?: number;
+  size?: number;
 }
 
 export interface CreateUnitRequest {

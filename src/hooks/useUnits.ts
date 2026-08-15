@@ -30,6 +30,21 @@ export function useCreateUnit(options?: UseCreateUnitOptions) {
   });
 }
 
+export function useUpdateUnit(id: number | string, options?: { onSuccess?: () => void; onError?: (error: AxiosError<any>) => void }) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Partial<CreateUnitRequest>) => unitService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['units'] });
+      options?.onSuccess?.();
+    },
+    onError: (error: AxiosError<any>) => {
+      options?.onError?.(error);
+    },
+  });
+}
+
 export function useDeleteUnit(options?: { onSuccess?: () => void; onError?: (error: AxiosError) => void }) {
   const queryClient = useQueryClient();
 

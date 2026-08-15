@@ -218,7 +218,7 @@ export const ProductUpdatePage = () => {
                 loading={isUnitsLoading || isCreatingUnit}
                 onSearch={setUnitSearch}
                 filterOption={false}
-                options={units?.map((u) => ({ label: u.name, value: u.id })) || []}
+                options={units?.data?.map((u) => ({ label: u.name, value: u.id })) || []}
                 notFoundContent={
                   isUnitsLoading ? (
                     <div className="p-2 text-center"><Spin size="small" /></div>
