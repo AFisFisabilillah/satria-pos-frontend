@@ -20,6 +20,7 @@ import { useSuppliers } from '../../../hooks/useSuppliers';
 import { useProducts } from '../../../hooks/useProducts';
 import type { CreateStockSupplyRequest } from '../../../types/stockSupply';
 import { useDebounce } from 'use-debounce';
+import { SupplierModal } from '../../../components/supplier/SupplierModal';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -34,6 +35,8 @@ export const StockSupplyCreatePage = () => {
 
   const [productSearch, setProductSearch] = useState('');
   const [debouncedProductSearch] = useDebounce(productSearch, 500);
+
+  const [isSupplierModalOpen, setIsSupplierModalOpen] = useState(false);
 
   const { data: suppliers, isLoading: isSuppliersLoading } = useSuppliers({ search: debouncedSupplierSearch });
   const { data: productsData, isLoading: isProductsLoading } = useProducts({ search: debouncedProductSearch });
@@ -102,7 +105,22 @@ export const StockSupplyCreatePage = () => {
                 onSearch={setSupplierSearch}
                 filterOption={false}
                 options={suppliers?.data?.map((s) => ({ label: s.name, value: s.id })) || []}
-                notFoundContent={isSuppliersLoading ? <Spin size="small" /> : null}
+                notFoundContent={
+                  isSuppliersLoading ? (
+                    <Spin size="small" />
+                  ) : debouncedSupplierSearch ? (
+                    <div className="p-2 flex flex-col gap-2 text-center">
+                      <Text type="secondary">Supplier "{debouncedSupplierSearch}" tidak ditemukan.</Text>
+                      <Button
+                        type="dashed"
+                        size="small"
+                        onClick={() => setIsSupplierModalOpen(true)}
+                      >
+                        Tambah Supplier Baru
+                      </Button>
+                    </div>
+                  ) : null
+                }
               />
             </Form.Item>
 
@@ -216,6 +234,11 @@ export const StockSupplyCreatePage = () => {
           </div>
         </Form>
       </Card>
+
+      <SupplierModal
+        open={isSupplierModalOpen}
+        onCancel={() => setIsSupplierModalOpen(false)}
+      />
     </div>
   );
 };
