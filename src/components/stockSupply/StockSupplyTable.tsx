@@ -1,5 +1,5 @@
 import { Table, Dropdown, Button } from 'antd';
-import { MoreOutlined, EyeOutlined } from '@ant-design/icons';
+import { MoreOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import type { TablePaginationConfig } from 'antd/es/table';
 import type { MenuProps } from 'antd';
 import type { PaginatedResponse } from '../../types/api';
@@ -12,7 +12,7 @@ interface StockSupplyTableProps {
   page: number;
   size: number;
   onTableChange: (page: number, size: number) => void;
-  onAction?: (action: 'detail', record: StockSupply) => void;
+  onAction?: (action: 'detail' | 'edit', record: StockSupply) => void;
 }
 
 export const StockSupplyTable = ({
@@ -50,6 +50,16 @@ export const StockSupplyTable = ({
       render: (text: string) => text || '-',
     },
     {
+      title: 'Total Qty',
+      dataIndex: 'total_items_quantity',
+      render: (qty: number) => qty ?? '-',
+    },
+    {
+      title: 'Varian Barang',
+      dataIndex: 'total_item_types',
+      render: (types: number) => types ?? '-',
+    },
+    {
       title: 'Catatan',
       dataIndex: 'notes',
       render: (text: string) => text || '-',
@@ -63,6 +73,11 @@ export const StockSupplyTable = ({
             key: 'detail',
             icon: <EyeOutlined />,
             label: 'Detail',
+          },
+          {
+            key: 'edit',
+            icon: <EditOutlined />,
+            label: 'Edit',
           }
         ];
 

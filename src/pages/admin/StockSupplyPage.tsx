@@ -44,7 +44,9 @@ export const StockSupplyPage = () => {
 
   const handleAction = (action: string, record: StockSupply) => {
     if (action === 'detail') {
-      console.log('Navigate to detail:', record.id);
+      navigate(`/super-admin/stock-supply/${record.id}`);
+    } else if (action === 'edit') {
+      navigate(`/super-admin/stock-supply/${record.id}/edit`);
     }
   };
 
