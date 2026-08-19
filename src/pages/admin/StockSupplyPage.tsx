@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Typography, Input, Button, DatePicker } from 'antd';
+import { Typography, Input, Button, DatePicker, App, Modal } from 'antd';
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import { useDebounce } from 'use-debounce';
-import { useStockSupplies } from '../../hooks/useStockSupply';
+import { useStockSupplies, useDeleteStockSupply } from '../../hooks/useStockSupply';
 import { StockSupplyTable } from '../../components/stockSupply/StockSupplyTable';
 import type { StockSupply } from '../../types/stockSupply';
-import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 
 export const StockSupplyPage = () => {
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const [searchText, setSearchText] = useState('');
   const [debouncedSearch] = useDebounce(searchText, 500);
 
@@ -27,6 +27,11 @@ export const StockSupplyPage = () => {
     endDate: dateRange?.[1],
     page,
     size,
+  });
+
+  const { mutate: deleteStockSupply } = useDeleteStockSupply({
+    onSuccess: () => message.success('Stock Supply berhasil dihapus'),
+    onError: (err) => message.error(err.response?.data?.message || 'Gagal menghapus stock supply'),
   });
 
   const handleTableChange = (newPage: number, newSize: number) => {
@@ -47,6 +52,15 @@ export const StockSupplyPage = () => {
       navigate(`/super-admin/stock-supply/${record.id}`);
     } else if (action === 'edit') {
       navigate(`/super-admin/stock-supply/${record.id}/edit`);
+    } else if (action === 'delete') {
+      Modal.confirm({
+        title: 'Hapus Stock Supply',
+        content: `Yakin ingin menghapus stock supply ${record.invoice_number || ''}? Data stok yang terkait juga akan terhapus.`,
+        okText: 'Hapus',
+        okButtonProps: { danger: true },
+        cancelText: 'Batal',
+        onOk: () => deleteStockSupply(record.id),
+      });
     }
   };
 

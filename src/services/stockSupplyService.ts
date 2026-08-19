@@ -17,6 +17,9 @@ export const stockSupplyService = {
   update: (id: number | string, data: Partial<CreateStockSupplyRequest>) =>
     apiClient.put<{ data: StockSupply }>(`/stock-supply/${id}`, data).then((res) => res.data.data),
 
+  delete: (id: number | string) =>
+    apiClient.delete<{ message: string }>(`/stock-supplies/${id}`).then((res) => res.data),
+
   deleteItem: (id: number | string) =>
     apiClient.delete<{ message: string }>(`/stock-supply-items/${id}`).then((res) => res.data),
 };
