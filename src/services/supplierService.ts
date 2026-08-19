@@ -1,12 +1,15 @@
 import { apiClient } from '../lib/apiClient';
 import type { PaginatedResponse } from '../types/api';
-import type { Supplier, SupplierQuery, CreateSupplierRequest } from '../types/supplier';
+import type { Supplier, SupplierQuery, CreateSupplierRequest, SupplierDetail } from '../types/supplier';
 
 export const supplierService = {
   getAll: (params?: SupplierQuery) =>
     apiClient
       .get<PaginatedResponse<Supplier>>('/supliers', { params })
       .then((res) => res.data),
+
+  getById: (id: number | string) =>
+    apiClient.get<{ data: SupplierDetail }>(`/supliers/${id}`).then((res) => res.data.data),
 
   create: (data: CreateSupplierRequest) =>
     apiClient.post<{ data: Supplier }>('/supliers', data).then((res) => res.data.data),

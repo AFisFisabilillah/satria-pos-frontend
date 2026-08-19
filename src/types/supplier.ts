@@ -1,3 +1,5 @@
+import type { StockSupply } from './stockSupply';
+
 export interface Supplier {
   id: number;
   name: string;
@@ -6,6 +8,10 @@ export interface Supplier {
   city?: string;
   province?: string;
   postal_code?: string;
+}
+
+export interface SupplierDetail extends Supplier {
+  stock_suppliers: StockSupply[];
 }
 
 export interface SupplierQuery {

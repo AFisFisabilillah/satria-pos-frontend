@@ -1,10 +1,11 @@
 import { Table, Button, Popconfirm } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import type { TablePaginationConfig } from 'antd/es/table';
 import type { PaginatedResponse } from '../../types/api';
 import type { Supplier } from '../../types/supplier';
 import { useDeleteSupplier } from '../../hooks/useSuppliers';
 import { App } from 'antd';
+import { Link } from 'react-router';
 
 interface SupplierTableProps {
   data?: PaginatedResponse<Supplier>;
@@ -78,6 +79,9 @@ export const SupplierTable = ({
       width: 120,
       render: (_: unknown, record: Supplier) => (
         <div className="flex gap-2">
+          <Link to={`/super-admin/supplier/${record.id}`}>
+            <Button type="text" icon={<EyeOutlined />} size="small" />
+          </Link>
           <Button
             type="text"
             icon={<EditOutlined />}

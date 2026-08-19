@@ -13,6 +13,7 @@ import { ProductUpdatePage } from './pages/admin/ProductUpdatePage.tsx';
 import { UnitPage } from './pages/admin/UnitPage.tsx';
 import { CategoryPage } from './pages/admin/CategoryPage.tsx';
 import { SupplierPage } from './pages/admin/SupplierPage.tsx';
+import { SupplierDetailPage } from './pages/admin/SupplierDetailPage.tsx';
 import { MemberPage } from './pages/admin/MemberPage.tsx';
 import { MemberDetailPage } from './pages/admin/MemberDetailPage.tsx';
 import { StockSupplyPage } from './pages/admin/StockSupplyPage.tsx';
@@ -55,6 +56,7 @@ export function AppWrapper() {
               <Route path='unit' element={<UnitPage/>} />
               <Route path='category' element={<CategoryPage/>} />
               <Route path='supplier' element={<SupplierPage/>} />
+              <Route path='supplier/:id' element={<SupplierDetailPage/>} />
               <Route path='member' element={<MemberPage/>} />
               <Route path='member/:id' element={<MemberDetailPage/>} />
               <Route path='stock-supply' element={<StockSupplyPage/>} />

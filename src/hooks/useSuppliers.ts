@@ -10,6 +10,14 @@ export function useSuppliers(params?: SupplierQuery) {
   });
 }
 
+export function useSupplier(id: number | string) {
+  return useQuery({
+    queryKey: ['suppliers', id],
+    queryFn: () => supplierService.getById(id),
+    enabled: !!id,
+  });
+}
+
 export function useCreateSupplier(options?: { onSuccess?: () => void; onError?: (error: AxiosError<any>) => void }) {
   const queryClient = useQueryClient();
   return useMutation({
