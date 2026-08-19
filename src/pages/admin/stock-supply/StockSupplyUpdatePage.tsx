@@ -53,19 +53,36 @@ export const StockSupplyUpdatePage = () => {
     }
   });
 
+  // Build options that include existing products so Select shows their labels
+  // even if they're not in the current search results page
+  const existingProductOptions = stockSupply?.items?.map((item) => ({
+    label: item.product_summary.name,
+    value: item.product_summary.id,
+  })) || [];
+
+  const searchProductOptions = productsData?.data?.map((p) => ({ label: p.name, value: p.id })) || [];
+
+  // Merge: search results + existing (deduplicated)
+  const mergedProductOptions = [
+    ...searchProductOptions,
+    ...existingProductOptions.filter(
+      (ep) => !searchProductOptions.some((sp) => sp.value === ep.value)
+    ),
+  ];
+
   useEffect(() => {
     if (stockSupply) {
       form.setFieldsValue({
         suplier_id: stockSupply.suplier?.id,
         invoice_number: stockSupply.invoice_number,
         notes: stockSupply.notes,
-        products: stockSupply.items.map(item => ({
-          id: item.id, // we keep the id to map them properly
-          product_id: item.product_id,
+        products: stockSupply.items?.map((item) => ({
+          id: item.id,
+          product_id: item.product_summary.id,
           quantity_in: item.quantity_in,
           purchase_price: Number(item.purchase_price),
           expired_date: item.expired_at ? dayjs(item.expired_at) : undefined,
-        }))
+        })) || []
       });
     }
   }, [stockSupply, form]);
@@ -203,7 +220,7 @@ export const StockSupplyUpdatePage = () => {
                           loading={isProductsLoading}
                           onSearch={setProductSearch}
                           filterOption={false}
-                          options={productsData?.data?.map((p) => ({ label: p.name, value: p.id })) || []}
+                          options={mergedProductOptions}
                           notFoundContent={isProductsLoading ? <Spin size="small" /> : null}
                         />
                       </Form.Item>

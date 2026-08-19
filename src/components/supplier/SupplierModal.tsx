@@ -10,9 +10,10 @@ interface SupplierModalProps {
   open: boolean;
   onCancel: () => void;
   initialData?: Supplier | null;
+  onSuccess?: (supplierId: number) => void;
 }
 
-export const SupplierModal = ({ open, onCancel, initialData }: SupplierModalProps) => {
+export const SupplierModal = ({ open, onCancel, initialData, onSuccess }: SupplierModalProps) => {
   const [form] = Form.useForm();
   const { message } = App.useApp();
 
@@ -29,9 +30,12 @@ export const SupplierModal = ({ open, onCancel, initialData }: SupplierModalProp
   };
 
   const { mutate: createSupplier, isPending: isCreating } = useCreateSupplier({
-    onSuccess: () => {
+    onSuccess: (data) => {
       message.success('Supplier berhasil ditambahkan');
       handleClose();
+      if (onSuccess && data?.id) {
+        onSuccess(data.id);
+      }
     },
     onError: (err: AxiosError<{ errors?: Record<string, string[]>; message?: string }>) => {
       const errors = err.response?.data?.errors;
