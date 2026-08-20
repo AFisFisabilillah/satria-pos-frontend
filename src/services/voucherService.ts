@@ -12,4 +12,10 @@ export const voucherService = {
     apiClient
       .post<{ data: Voucher }>('/voucher', data)
       .then((res) => res.data.data),
+
+  getById: (id: number | string) =>
+    apiClient.get<{ data: Voucher }>(`/voucher/${id}`).then((res) => res.data.data),
+
+  update: (id: number | string, data: Partial<CreateVoucherRequest>) =>
+    apiClient.put<{ data: Voucher }>(`/voucher/${id}`, data).then((res) => res.data.data),
 };

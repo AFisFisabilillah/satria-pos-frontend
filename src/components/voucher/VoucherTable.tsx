@@ -1,8 +1,10 @@
-import { Table, Tag } from 'antd';
+import { Button, Dropdown, Table, Tag } from 'antd';
 import type { TablePaginationConfig } from 'antd/es/table';
 import type { PaginatedResponse } from '../../types/api';
 import type { Voucher } from '../../types/voucher';
 import dayjs from 'dayjs';
+import { DeleteOutlined, EditOutlined, EyeOutlined, MoreOutlined, SwapOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router';
 
 interface VoucherTableProps {
   data?: PaginatedResponse<Voucher>;
@@ -19,6 +21,7 @@ export const VoucherTable = ({
   size,
   onTableChange,
 }: VoucherTableProps) => {
+  const navigate = useNavigate();
 
   const handleTableChange = (pagination: TablePaginationConfig) => {
     onTableChange(pagination.current || 1, pagination.pageSize || 10);
@@ -92,6 +95,50 @@ export const VoucherTable = ({
         </Tag>
       ),
     },
+    {
+      title: 'Aksi',
+      dataIndex: 'action',
+      width: 100,
+      render: (_: unknown, record: Voucher) => (
+         <Dropdown
+          trigger={['click']}
+          placement="bottomRight"
+          rootClassName="dark:ant-dropdown-menu-dark"
+          menu={{
+            items: [
+              {
+                key: 'detail',
+                label: 'Detail',
+                icon: <EyeOutlined />,
+                onClick: () => navigate(`/super-admin/voucher/${record.id}`)
+              },
+              {
+                key: 'update',
+                label: 'Update',
+                icon: <EditOutlined />,
+                onClick: () => navigate(`/super-admin/voucher/${record.id}/edit`)
+              },
+              {
+                key: 'toggle',
+                label: 'Ubah Status',
+                icon: <SwapOutlined />,
+              },
+              {
+                type: 'divider'
+              },
+              {
+                key: 'delete',
+                label: 'Hapus',
+                icon: <DeleteOutlined />,
+                danger: true,
+              }
+            ]
+          }}
+        >
+          <Button type="text" icon={<MoreOutlined />} />
+        </Dropdown>
+      )
+    }
   ];
 
   return (

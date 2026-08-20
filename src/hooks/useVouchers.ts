@@ -21,3 +21,24 @@ export function useCreateVoucher(options?: { onSuccess?: () => void; onError?: (
     onError: (error: AxiosError<any>) => options?.onError?.(error),
   });
 }
+
+export function useVoucher(id: number | string) {
+  return useQuery({
+    queryKey: ['voucher', id],
+    queryFn: () => voucherService.getById(id),
+    enabled: !!id,
+  });
+}
+
+export function useUpdateVoucher(id: number | string, options?: { onSuccess?: () => void; onError?: (error: AxiosError<any>) => void }) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: Partial<CreateVoucherRequest>) => voucherService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vouchers'] });
+      queryClient.invalidateQueries({ queryKey: ['voucher', id] });
+      options?.onSuccess?.();
+    },
+    onError: (error: AxiosError<any>) => options?.onError?.(error),
+  });
+}
