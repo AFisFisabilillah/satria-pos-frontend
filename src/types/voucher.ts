@@ -12,6 +12,17 @@ export interface Voucher {
   updated_at: string;
 }
 
+export interface CreateVoucherRequest {
+  name: string;
+  type: 'percent' | 'fixed';
+  value: number;
+  quota: number;
+  min_purchase?: number;
+  expired_at: string;
+  active: number;
+  code: string;
+}
+
 export interface VoucherQuery {
   search?: string;
   active?: number;

@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { Typography, Input, Select, DatePicker, InputNumber } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Typography, Input, Select, DatePicker, InputNumber, Button } from 'antd';
+import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import { useDebounce } from 'use-debounce';
 import { useVouchers } from '../../hooks/useVouchers';
 import { VoucherTable } from '../../components/voucher/VoucherTable';
+import { useNavigate } from 'react-router';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 
 export const VoucherPage = () => {
+  const navigate = useNavigate();
   const [searchText, setSearchText] = useState('');
   const [debouncedSearch] = useDebounce(searchText, 500);
 
@@ -47,7 +49,15 @@ export const VoucherPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <Title level={3} className="!m-0">Data Voucher</Title>
+        <Title level={3} className="m-0!">Data Voucher</Title>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => navigate('/super-admin/voucher/create')}
+          className="bg-[#ff6a00] hover:bg-[#e55e00] border-none"
+        >
+          Tambah Voucher
+        </Button>
       </div>
 
       <div className="bg-white dark:bg-[#141414] p-5 rounded-xl border border-slate-200 dark:border-[#202020] shadow-sm flex flex-col gap-5">
