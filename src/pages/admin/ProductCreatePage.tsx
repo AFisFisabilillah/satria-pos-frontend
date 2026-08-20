@@ -172,7 +172,7 @@ export const ProductCreatePage = () => {
                 size="large"
                 className="w-full"
                 formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                parser={(value) => Number(value?.replace(/\Rp\s?|(\.*)/g, ''))}
+                parser={(value) => (value ? Number(value.replace(/\Rp\s?|(\.*)/g, '')) : 0) as 0}
                 placeholder="0"
                 min={0}
               />

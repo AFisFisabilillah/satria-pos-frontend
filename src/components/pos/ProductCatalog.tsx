@@ -85,7 +85,7 @@ export const ProductCatalog = () => {
             {filteredProducts.map((product) => {
               const cartItem = cart.find((item) => item.product_id === product.id);
               const inCartQty = cartItem?.quantity || 0;
-              const isOutOfStock = product.total_stock <= 0;
+              const isOutOfStock = (product.quantity ?? 0) <= 0;
 
               return (
                 <Badge.Ribbon
@@ -126,7 +126,7 @@ export const ProductCatalog = () => {
                       </h4>
 
                       <div className="text-xs text-slate-500 font-medium">
-                        Stok: <span className={isOutOfStock ? 'text-red-500 font-bold' : 'text-slate-700 dark:text-slate-300'}>{product.total_stock ?? 0}</span>
+                        Stok: <span className={isOutOfStock ? 'text-red-500 font-bold' : 'text-slate-700 dark:text-slate-300'}>{product.quantity ?? 0}</span>
                       </div>
 
                       <div className="flex justify-between items-center mt-1">

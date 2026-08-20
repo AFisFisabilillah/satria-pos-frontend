@@ -1,5 +1,5 @@
 import { ConfigProvider, App, theme } from 'antd';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
+import { BrowserRouter, Routes, Route } from 'react-router';
 import { themeTokens } from './theme/token.ts';
 import { useTheme } from './contexts/ThemeContext';
 import LoginPage from './pages/auth/LoginPage';

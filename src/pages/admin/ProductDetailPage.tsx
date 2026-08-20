@@ -1,4 +1,4 @@
-import { useParams, useNavigate, data } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { Card, Descriptions, Tag, Button, Spin, Typography, Image, Table } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useProduct } from '../../hooks/useProducts';
@@ -75,7 +75,7 @@ export const ProductDetailPage = () => {
                 </Text>
               </Descriptions.Item>
               <Descriptions.Item label="Total Stok Saat Ini">
-                <Text strong>{product.total_stock} {product.unit?.name}</Text>
+                <Text strong>{product.quantity} {product.unit?.name}</Text>
               </Descriptions.Item>
               <Descriptions.Item label="Deskripsi">
                 {product.description || '-'}

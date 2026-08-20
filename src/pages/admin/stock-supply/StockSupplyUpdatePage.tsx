@@ -247,7 +247,7 @@ export const StockSupplyUpdatePage = () => {
                           className="w-full"
                           placeholder="Harga Beli"
                           formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                          parser={(value) => Number(value?.replace(/\Rp\s?|(\.*)/g, ''))}
+                          parser={(value) => (value ? Number(value.replace(/\Rp\s?|(\.*)/g, '')) : 0) as 0}
                         />
                       </Form.Item>
 

@@ -198,7 +198,7 @@ export const ProductUpdatePage = () => {
                 size="large"
                 className="w-full"
                 formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                parser={(value) => value?.replace(/\Rp\s?|(\.*)/g, '') as unknown as number}
+                parser={(value) => (value ? Number(value.replace(/\Rp\s?|(\.*)/g, '')) : 0) as 0}
                 placeholder="0"
                 min={0}
               />

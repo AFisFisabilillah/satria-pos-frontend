@@ -17,7 +17,7 @@ export interface Product {
   image: string;
   active: boolean;
   sale_price: number;
-  total_stock: number;
+  quantity: number;
   unit: Unit;
   categories: Category[];
   stock_supply_items?: StockSupplyItem[];

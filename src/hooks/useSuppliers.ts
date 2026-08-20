@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { supplierService } from '../services/supplierService';
-import type { SupplierQuery, CreateSupplierRequest } from '../types/supplier';
+import type { Supplier, SupplierQuery, CreateSupplierRequest } from '../types/supplier';
 
 export function useSuppliers(params?: SupplierQuery) {
   return useQuery({
@@ -18,15 +18,15 @@ export function useSupplier(id: number | string) {
   });
 }
 
-export function useCreateSupplier(options?: { onSuccess?: () => void; onError?: (error: AxiosError<any>) => void }) {
+export function useCreateSupplier(options?: { onSuccess?: (data: Supplier) => void; onError?: (error: AxiosError<any>) => void }) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateSupplierRequest) => supplierService.create(data),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['suppliers'] });
-      options?.onSuccess?.();
+      options?.onSuccess?.(data);
     },
-    onError: (error: AxiosError) => options?.onError?.(error),
+    onError: (error: AxiosError<any>) => options?.onError?.(error),
   });
 }
 

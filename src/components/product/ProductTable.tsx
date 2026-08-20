@@ -107,10 +107,10 @@ console.log(data);
     },
     {
       title: 'Stok',
-      key: 'total_stock',
+      key: 'quantity',
       align: 'center',
       render: (_, record) => (
-        <Text strong>{record.total_stock}</Text>
+        <Text strong>{record.quantity}</Text>
       ),
     },
     {

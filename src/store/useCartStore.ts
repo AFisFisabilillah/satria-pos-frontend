@@ -32,16 +32,16 @@ export const useCartStore = create<CartState>((set, get) => ({
     const { cart } = get();
     const existingIndex = cart.findIndex((item) => item.product_id === product.id);
 
-    if (product.total_stock <= 0) {
+    if (product.quantity <= 0) {
       return { success: false, message: `Stok produk "${product.name}" habis!` };
     }
 
     if (existingIndex > -1) {
       const existingItem = cart[existingIndex];
-      if (existingItem.quantity + 1 > product.total_stock) {
+      if (existingItem.quantity + 1 > product.quantity) {
         return {
           success: false,
-          message: `Stok produk "${product.name}" tidak mencukupi. Sisa stok: ${product.total_stock}`,
+          message: `Stok produk "${product.name}" tidak mencukupi. Sisa stok: ${product.quantity}`,
         };
       }
 
@@ -58,7 +58,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       product_id: product.id,
       name: product.name,
       price: product.sale_price,
-      stock: product.total_stock,
+      stock: product.quantity,
       quantity: 1,
       image: product.image,
     };
