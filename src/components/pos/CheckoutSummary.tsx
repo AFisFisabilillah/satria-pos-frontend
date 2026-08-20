@@ -42,9 +42,11 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
   });
 
   const { data: vouchersData, isLoading: isVouchersLoading } = useVouchers({
-    active: 1,
-    size: 50,
+    size: 100,
   });
+
+  // Active vouchers list
+  const activeVouchers = (vouchersData?.data || []).filter((v) => v.active === 1 || (v.active as any) === true);
 
   const {
     cart,
@@ -110,7 +112,7 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
   };
 
   const handleVoucherChange = (voucherIds: number[]) => {
-    const selected = (vouchersData?.data || []).filter((v) => voucherIds.includes(v.id));
+    const selected = activeVouchers.filter((v) => voucherIds.includes(v.id));
     setSelectedVouchers(selected);
   };
 
@@ -173,8 +175,8 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
             onChange={handleVoucherChange}
             className="w-full"
             maxTagCount="responsive"
-            options={vouchersData?.data?.map((v) => ({
-              label: `${v.name} (${v.type === 'percent' ? `${v.value}%` : `Rp ${v.value.toLocaleString('id-ID')}`})`,
+            options={activeVouchers.map((v) => ({
+              label: `${v.name} (${v.type === 'percent' ? `${v.value}%` : `Rp ${Number(v.value).toLocaleString('id-ID')}`})`,
               value: v.id,
             }))}
           />
