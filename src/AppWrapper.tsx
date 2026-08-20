@@ -20,6 +20,7 @@ import { StockSupplyPage } from './pages/admin/StockSupplyPage.tsx';
 import { StockSupplyCreatePage } from './pages/admin/stock-supply/StockSupplyCreatePage.tsx';
 import { StockSupplyDetailPage } from './pages/admin/stock-supply/StockSupplyDetailPage.tsx';
 import { StockSupplyUpdatePage } from './pages/admin/stock-supply/StockSupplyUpdatePage.tsx';
+import { VoucherPage } from './pages/admin/VoucherPage.tsx';
 
 export function AppWrapper() {
   const { isDarkMode } = useTheme();
@@ -63,6 +64,7 @@ export function AppWrapper() {
               <Route path='stock-supply/create' element={<StockSupplyCreatePage/>} />
               <Route path='stock-supply/:id/edit' element={<StockSupplyUpdatePage/>} />
               <Route path='stock-supply/:id' element={<StockSupplyDetailPage/>} />
+              <Route path='voucher' element={<VoucherPage/>} />
             </Route>
 
           </Routes>
