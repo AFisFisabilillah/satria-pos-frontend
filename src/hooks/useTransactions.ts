@@ -8,3 +8,11 @@ export function useTransactions(params?: TransactionQuery) {
     queryFn: () => transactionService.getAll(params),
   });
 }
+
+export function useTransaction(id: number | string) {
+  return useQuery({
+    queryKey: ['transactions', id],
+    queryFn: () => transactionService.getById(id),
+    enabled: !!id,
+  });
+}
