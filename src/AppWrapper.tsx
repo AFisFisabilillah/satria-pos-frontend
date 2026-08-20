@@ -73,6 +73,7 @@ export function AppWrapper() {
               <Route path='voucher/:id' element={<VoucherDetailPage/>} />
               <Route path='voucher/create' element={<VoucherCreatePage/>} />
               <Route path='voucher/:id/edit' element={<VoucherUpdatePage/>} />
+              <Route path='kasir' element={<KasirPage/>} />
             </Route>
 
           </Routes>
