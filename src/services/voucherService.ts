@@ -18,4 +18,13 @@ export const voucherService = {
 
   update: (id: number | string, data: Partial<CreateVoucherRequest>) =>
     apiClient.put<{ data: Voucher }>(`/voucher/${id}`, data).then((res) => res.data.data),
+
+  toggleActive: (id: number | string) =>
+    apiClient.patch<{ status: string; message: string }>(`/voucher/${id}/toggle-active`).then((res) => res.data),
+
+  bulkToggleActive: (data: { ids: (number | string)[] }) =>
+    apiClient.patch<{ message: string }>('/voucher/bulk-toggle-active', data).then((res) => res.data),
+
+  delete: (id: number | string) =>
+    apiClient.delete<{ message: string }>(`/voucher/${id}`).then((res) => res.data),
 };

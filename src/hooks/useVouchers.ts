@@ -42,3 +42,39 @@ export function useUpdateVoucher(id: number | string, options?: { onSuccess?: ()
     onError: (error: AxiosError<any>) => options?.onError?.(error),
   });
 }
+
+export function useToggleVoucher(options?: { onSuccess?: () => void; onError?: (error: AxiosError<any>) => void }) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number | string) => voucherService.toggleActive(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vouchers'] });
+      options?.onSuccess?.();
+    },
+    onError: (error: AxiosError<any>) => options?.onError?.(error),
+  });
+}
+
+export function useBulkToggleVouchers(options?: { onSuccess?: () => void; onError?: (error: AxiosError<any>) => void }) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { ids: (number | string)[] }) => voucherService.bulkToggleActive(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vouchers'] });
+      options?.onSuccess?.();
+    },
+    onError: (error: AxiosError<any>) => options?.onError?.(error),
+  });
+}
+
+export function useDeleteVoucher(options?: { onSuccess?: () => void; onError?: (error: AxiosError<any>) => void }) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number | string) => voucherService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vouchers'] });
+      options?.onSuccess?.();
+    },
+    onError: (error: AxiosError<any>) => options?.onError?.(error),
+  });
+}

@@ -12,6 +12,9 @@ interface VoucherTableProps {
   page: number;
   size: number;
   onTableChange: (page: number, size: number) => void;
+  onAction?: (action: 'detail' | 'update' | 'toggle' | 'delete', record: Voucher) => void;
+  selectedRowKeys: React.Key[];
+  onSelectChange: (selectedRowKeys: React.Key[]) => void;
 }
 
 export const VoucherTable = ({
@@ -20,6 +23,9 @@ export const VoucherTable = ({
   page,
   size,
   onTableChange,
+  onAction,
+  selectedRowKeys,
+  onSelectChange,
 }: VoucherTableProps) => {
   const navigate = useNavigate();
 
@@ -122,6 +128,7 @@ export const VoucherTable = ({
                 key: 'toggle',
                 label: 'Ubah Status',
                 icon: <SwapOutlined />,
+                onClick: () => onAction?.('toggle', record)
               },
               {
                 type: 'divider'
@@ -131,6 +138,7 @@ export const VoucherTable = ({
                 label: 'Hapus',
                 icon: <DeleteOutlined />,
                 danger: true,
+                onClick: () => onAction?.('delete', record)
               }
             ]
           }}
@@ -144,6 +152,10 @@ export const VoucherTable = ({
   return (
     <Table
       rowKey="id"
+      rowSelection={{
+        selectedRowKeys,
+        onChange: onSelectChange,
+      }}
       columns={columns}
       dataSource={data?.data || []}
       loading={isLoading}

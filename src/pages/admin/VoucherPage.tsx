@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import { Typography, Input, Select, DatePicker, InputNumber, Button } from 'antd';
-import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
+import { Typography, Input, Select, DatePicker, InputNumber, Button, App } from 'antd';
+import { SearchOutlined, PlusOutlined, SwapOutlined } from '@ant-design/icons';
 import { useDebounce } from 'use-debounce';
-import { useVouchers } from '../../hooks/useVouchers';
+import { useVouchers, useToggleVoucher, useBulkToggleVouchers, useDeleteVoucher } from '../../hooks/useVouchers';
 import { VoucherTable } from '../../components/voucher/VoucherTable';
 import { useNavigate } from 'react-router';
+import type { Voucher } from '../../types/voucher';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 
 export const VoucherPage = () => {
   const navigate = useNavigate();
+  const { message, modal } = App.useApp();
   const [searchText, setSearchText] = useState('');
   const [debouncedSearch] = useDebounce(searchText, 500);
 
@@ -21,6 +23,7 @@ export const VoucherPage = () => {
 
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const { data, isLoading } = useVouchers({
     search: debouncedSearch || undefined,
@@ -31,6 +34,24 @@ export const VoucherPage = () => {
     maxQuota,
     page,
     size,
+  });
+
+  const { mutate: toggleVoucher } = useToggleVoucher({
+    onSuccess: () => message.success('Status voucher berhasil diubah'),
+    onError: (err) => message.error(err.response?.data?.message || 'Gagal mengubah status voucher'),
+  });
+
+  const { mutate: bulkToggleVouchers, isPending: isBulkToggling } = useBulkToggleVouchers({
+    onSuccess: () => {
+      message.success('Status voucher yang dipilih berhasil diubah');
+      setSelectedRowKeys([]);
+    },
+    onError: (err) => message.error(err.response?.data?.message || 'Gagal mengubah status voucher'),
+  });
+
+  const { mutate: deleteVoucher } = useDeleteVoucher({
+    onSuccess: () => message.success('Voucher berhasil dihapus'),
+    onError: (err) => message.error(err.response?.data?.message || 'Gagal menghapus voucher'),
   });
 
   const handleTableChange = (newPage: number, newSize: number) => {
@@ -46,18 +67,51 @@ export const VoucherPage = () => {
     setPage(1);
   };
 
+  const handleAction = (action: string, record: Voucher) => {
+    if (action === 'toggle') {
+      toggleVoucher(record.id);
+    } else if (action === 'delete') {
+      modal.confirm({
+        title: 'Hapus Voucher',
+        content: `Yakin ingin menghapus voucher ${record.name}?`,
+        okText: 'Hapus',
+        okButtonProps: { danger: true },
+        cancelText: 'Batal',
+        onOk: () => deleteVoucher(record.id),
+      });
+    }
+  };
+
+  const handleBulkToggle = () => {
+    if (selectedRowKeys.length > 0) {
+      bulkToggleVouchers({ ids: selectedRowKeys as (string | number)[] });
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <Title level={3} className="m-0!">Data Voucher</Title>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => navigate('/super-admin/voucher/create')}
-          className="bg-[#ff6a00] hover:bg-[#e55e00] border-none"
-        >
-          Tambah Voucher
-        </Button>
+        <div className="flex gap-2">
+          {selectedRowKeys.length > 0 && (
+            <Button
+              type="default"
+              icon={<SwapOutlined />}
+              onClick={handleBulkToggle}
+              loading={isBulkToggling}
+            >
+              Ubah Status Terpilih ({selectedRowKeys.length})
+            </Button>
+          )}
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => navigate('/super-admin/voucher/create')}
+            className="bg-[#ff6a00] hover:bg-[#e55e00] border-none"
+          >
+            Tambah Voucher
+          </Button>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-[#141414] p-5 rounded-xl border border-slate-200 dark:border-[#202020] shadow-sm flex flex-col gap-5">
@@ -147,6 +201,9 @@ export const VoucherPage = () => {
           page={page}
           size={size}
           onTableChange={handleTableChange}
+          onAction={handleAction as any}
+          selectedRowKeys={selectedRowKeys}
+          onSelectChange={setSelectedRowKeys}
         />
       </div>
     </div>
