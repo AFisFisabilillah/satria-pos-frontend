@@ -24,6 +24,7 @@ import { VoucherPage } from './pages/admin/VoucherPage.tsx';
 import { VoucherCreatePage } from './pages/admin/VoucherCreatePage.tsx';
 import { VoucherUpdatePage } from './pages/admin/VoucherUpdatePage.tsx';
 import { VoucherDetailPage } from './pages/admin/VoucherDetailPage.tsx';
+import { KasirPage } from './pages/pos/KasirPage.tsx';
 
 export function AppWrapper() {
   const { isDarkMode } = useTheme();
@@ -49,6 +50,7 @@ export function AppWrapper() {
 
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<DashboardPage />} />
+              <Route path="/kasir" element={<KasirPage />} />
             </Route>
 
             <Route path='/super-admin' element={<SuperAdminLayout><ProtectedRoute allowedRoles={['super_admin']} /></SuperAdminLayout>} >

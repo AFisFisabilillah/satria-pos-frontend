@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { Navbar } from "./Navbar";
 import { ContentLayout } from "./ContentLayout";
-import { HomeOutlined, ProductOutlined } from "@ant-design/icons";
+import { HomeOutlined, ProductOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Link } from "react-router";
 
 interface AdminGudangLayoutProps {
@@ -32,6 +32,11 @@ export const SuperAdminLayout = ({ children }: AdminGudangLayoutProps) => {
       key: '/super-admin',
       label: <Link to="/super-admin">Dashboard</Link>,
       icon:<HomeOutlined/>
+    },
+     {
+      key: '/kasir',
+      label:  <Link to="/kasir">Kasir (POS)</Link>,
+      icon:<ShoppingCartOutlined/>
     },
     {
       key: '/super-admin/product',
