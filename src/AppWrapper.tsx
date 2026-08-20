@@ -25,6 +25,7 @@ import { VoucherCreatePage } from './pages/admin/VoucherCreatePage.tsx';
 import { VoucherUpdatePage } from './pages/admin/VoucherUpdatePage.tsx';
 import { VoucherDetailPage } from './pages/admin/VoucherDetailPage.tsx';
 import { KasirPage } from './pages/pos/KasirPage.tsx';
+import { TransactionPage } from './pages/admin/transaction/TransactionPage.tsx';
 
 export function AppWrapper() {
   const { isDarkMode } = useTheme();
@@ -73,6 +74,7 @@ export function AppWrapper() {
               <Route path='voucher/:id' element={<VoucherDetailPage/>} />
               <Route path='voucher/create' element={<VoucherCreatePage/>} />
               <Route path='voucher/:id/edit' element={<VoucherUpdatePage/>} />
+              <Route path='transaction' element={<TransactionPage/>} />
               <Route path='kasir' element={<KasirPage/>} />
             </Route>
 
