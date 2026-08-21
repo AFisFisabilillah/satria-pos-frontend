@@ -149,62 +149,105 @@ export const StockSupplyCreatePage = () => {
                   <Card key={key} size="small" className="mb-4 bg-slate-50 dark:bg-[#1f1f1f] border-dashed">
                     <div className="flex justify-between items-center mb-2">
                       <Text strong>Produk {name + 1}</Text>
-                      <MinusCircleOutlined className="text-red-500" onClick={() => remove(name)} />
+                      <MinusCircleOutlined className="text-red-500 cursor-pointer hover:text-red-700" onClick={() => remove(name)} />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'product_id']}
-                        label="Produk"
-                        rules={[{ required: true, message: 'Wajib diisi' }]}
-                        className="mb-0"
-                      >
-                        <Select
-                          showSearch
-                          placeholder="Pilih produk"
-                          loading={isProductsLoading}
-                          onSearch={setProductSearch}
-                          filterOption={false}
-                          options={productsData?.data?.map((p) => ({ label: p.name, value: p.id })) || []}
-                          notFoundContent={isProductsLoading ? <Spin size="small" /> : null}
-                        />
-                      </Form.Item>
 
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'quantity_in']}
-                        label="Jumlah (Qty)"
-                        rules={[{ required: true, message: 'Wajib diisi' }]}
-                        className="mb-0"
-                      >
-                        <InputNumber min={1} className="w-full" placeholder="Qty" />
-                      </Form.Item>
+                    <Form.Item
+                      noStyle
+                      shouldUpdate={(prevValues, currentValues) => {
+                        const prevProduct = prevValues.products?.[name];
+                        const currentProduct = currentValues.products?.[name];
+                        return prevProduct?.product_id !== currentProduct?.product_id ||
+                               prevProduct?.purchase_price !== currentProduct?.purchase_price;
+                      }}
+                    >
+                      {({ getFieldValue }) => {
+                        const productId = getFieldValue(['products', name, 'product_id']);
+                        const purchasePrice = getFieldValue(['products', name, 'purchase_price']) || 0;
+                        const selectedProduct = productsData?.data?.find(p => p.id === productId);
+                        const salePrice = selectedProduct?.sale_price || 0;
 
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'purchase_price']}
-                        label="Harga Beli (Satuan)"
-                        rules={[{ required: true, message: 'Wajib diisi' }]}
-                        className="mb-0"
-                      >
-                        <InputNumber
-                          min={0}
-                          className="w-full"
-                          placeholder="Harga Beli"
-                          formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                          parser={(value) => (value ? Number(value.replace(/\Rp\s?|(\.*)/g, '')) : 0) as 0}
-                        />
-                      </Form.Item>
+                        const profit = salePrice - purchasePrice;
+                        const profitMargin = purchasePrice > 0 ? ((profit / purchasePrice) * 100).toFixed(2) : 0;
+                        const isLoss = profit < 0;
+                        const isProfit = profit > 0;
+                        const textColorClass = isLoss ? "text-red-500" : (isProfit ? "text-green-500" : "");
 
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'expired_date']}
-                        label="Tanggal Kadaluarsa"
-                        className="mb-0"
-                      >
-                        <DatePicker className="w-full" placeholder="Opsional" format="YYYY-MM-DD" />
-                      </Form.Item>
-                    </div>
+                        return (
+                          <>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'product_id']}
+                                label="Produk"
+                                rules={[{ required: true, message: 'Wajib diisi' }]}
+                                className="mb-0"
+                              >
+                                <Select
+                                  showSearch
+                                  placeholder="Pilih produk"
+                                  loading={isProductsLoading}
+                                  onSearch={setProductSearch}
+                                  filterOption={false}
+                                  options={productsData?.data?.map((p) => ({ label: p.name, value: p.id })) || []}
+                                  notFoundContent={isProductsLoading ? <Spin size="small" /> : null}
+                                />
+                              </Form.Item>
+
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'quantity_in']}
+                                label="Jumlah (Qty)"
+                                rules={[{ required: true, message: 'Wajib diisi' }]}
+                                className="mb-0"
+                              >
+                                <InputNumber min={1} className="w-full" placeholder="Qty" />
+                              </Form.Item>
+
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'purchase_price']}
+                                label="Harga Beli (Satuan)"
+                                rules={[{ required: true, message: 'Wajib diisi' }]}
+                                className="mb-0"
+                              >
+                                <InputNumber
+                                  min={0}
+                                  className="w-full"
+                                  placeholder="Harga Beli"
+                                  formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                                  parser={(value) => (value ? Number(value.replace(/\Rp\s?|(\.*)/g, '')) : 0) as 0}
+                                />
+                              </Form.Item>
+
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'expired_date']}
+                                label="Tanggal Kadaluarsa"
+                                className="mb-0"
+                              >
+                                <DatePicker className="w-full" placeholder="Opsional" format="YYYY-MM-DD" />
+                              </Form.Item>
+                            </div>
+
+                            {selectedProduct && (
+                              <div className="mt-4 p-3 bg-white dark:bg-[#141414] rounded-lg border border-slate-200 dark:border-[#202020] flex gap-6 items-center">
+                                <div>
+                                  <Text type="secondary" className="block text-xs">Harga Jual Saat Ini</Text>
+                                  <Text strong>Rp {new Intl.NumberFormat('id-ID').format(salePrice)}</Text>
+                                </div>
+                                <div>
+                                  <Text type="secondary" className="block text-xs">Margin (Profit)</Text>
+                                  <Text strong className={textColorClass}>
+                                    {isProfit ? "+" : ""}Rp {new Intl.NumberFormat('id-ID').format(profit)} ({isProfit ? "+" : ""}{profitMargin}%)
+                                  </Text>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        );
+                      }}
+                    </Form.Item>
                   </Card>
                 ))}
 
