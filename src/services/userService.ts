@@ -2,6 +2,9 @@ import { apiClient } from '../lib/apiClient';
 import type { User, UserQuery, CreateUserRequest } from '../types/user';
 
 export const userService = {
+  getProfile: () =>
+    apiClient.get<{ data: User }>('/user').then((res) => res.data.data),
+
   getAll: (params?: UserQuery) =>
     apiClient.get<{ data: User[] }>('/users', { params }).then((res) => res.data),
 

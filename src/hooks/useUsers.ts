@@ -3,6 +3,13 @@ import type { AxiosError } from 'axios';
 import { userService } from '../services/userService';
 import type { UserQuery, CreateUserRequest } from '../types/user';
 
+export function useProfile() {
+  return useQuery({
+    queryKey: ['profile'],
+    queryFn: () => userService.getProfile(),
+  });
+}
+
 export function useUsers(params?: UserQuery) {
   return useQuery({
     queryKey: ['users', params],

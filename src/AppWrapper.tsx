@@ -28,6 +28,7 @@ import { KasirPage } from './pages/pos/KasirPage.tsx';
 import { TransactionPage } from './pages/admin/transaction/TransactionPage.tsx';
 import { TransactionDetailPage } from './pages/admin/transaction/TransactionDetailPage.tsx';
 import { UserPage } from './pages/admin/UserPage.tsx';
+import { ProfilePage } from './pages/admin/ProfilePage.tsx';
 
 export function AppWrapper() {
   const { isDarkMode } = useTheme();
@@ -79,6 +80,7 @@ export function AppWrapper() {
               <Route path='transaction' element={<TransactionPage/>} />
               <Route path='transaction/:id' element={<TransactionDetailPage/>} />
               <Route path='user' element={<UserPage/>} />
+              <Route path='profile' element={<ProfilePage/>} />
               <Route path='kasir' element={<KasirPage/>} />
             </Route>
 
