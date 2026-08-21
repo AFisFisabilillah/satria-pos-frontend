@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router';
 import { Card, Descriptions, Button, Spin, Typography, Table, Tag, Divider, Image } from 'antd';
-import { ArrowLeftOutlined, PrinterOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, PrinterOutlined, GiftOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { useTransaction } from '../../../hooks/useTransactions';
 import type { TransactionItem } from '../../../types/transaction';
@@ -29,6 +29,9 @@ export const TransactionDetailPage = () => {
       </div>
     );
   }
+
+  const subtotalBeforeDiscount = transaction.items?.reduce((sum, item) => sum + item.subtotal, 0) ?? 0;
+  const discountAmount = subtotalBeforeDiscount - transaction.total_price;
 
   const columns = [
     {
@@ -117,7 +120,18 @@ export const TransactionDetailPage = () => {
             />
             <div className="p-4 bg-slate-50 dark:bg-[#1f1f1f] border-t border-slate-200 dark:border-[#202020]">
               <div className="flex justify-between items-center py-1">
-                <Text type="secondary">Total Belanja</Text>
+                <Text type="secondary">Subtotal Produk</Text>
+                <Text>Rp {new Intl.NumberFormat('id-ID').format(subtotalBeforeDiscount)}</Text>
+              </div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between items-center py-1">
+                  <Text type="secondary">Diskon Voucher</Text>
+                  <Text className="text-red-500">- Rp {new Intl.NumberFormat('id-ID').format(discountAmount)}</Text>
+                </div>
+              )}
+              <Divider className="my-2" />
+              <div className="flex justify-between items-center py-1">
+                <Text strong>Total Setelah Diskon</Text>
                 <Text strong>Rp {new Intl.NumberFormat('id-ID').format(transaction.total_price)}</Text>
               </div>
               <div className="flex justify-between items-center py-1">
@@ -133,8 +147,35 @@ export const TransactionDetailPage = () => {
           </Card>
         </div>
 
-        <div className="md:col-span-1">
-          <Card className="dark:bg-[#141414] dark:border-[#202020] h-full" title="Informasi Member">
+        <div className="md:col-span-1 flex flex-col gap-6">
+          {/* Vouchers */}
+          <Card className="dark:bg-[#141414] dark:border-[#202020]" title={<span><GiftOutlined className="mr-2" />Voucher Digunakan</span>}>
+            {transaction.vouchers && transaction.vouchers.length > 0 ? (
+              <div className="flex flex-col gap-3">
+                {transaction.vouchers.map((v) => (
+                  <div key={v.id} className="p-3 border border-dashed border-orange-300 dark:border-orange-700 rounded-lg bg-orange-50 dark:bg-orange-950/20">
+                    <Text strong className="block text-sm">{v.name}</Text>
+                    <Text className="font-mono text-xs text-slate-500">{v.code}</Text>
+                    <div className="mt-2 flex items-center gap-2">
+                      <Tag color="orange" bordered={false}>
+                        {v.type === 'percent' ? `${v.value}%` : `Rp ${new Intl.NumberFormat('id-ID').format(v.value)}`}
+                      </Tag>
+                      {v.min_purchase > 0 && (
+                        <Text type="secondary" className="text-xs">Min. Rp {new Intl.NumberFormat('id-ID').format(v.min_purchase)}</Text>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <Text type="secondary">Tidak ada voucher</Text>
+              </div>
+            )}
+          </Card>
+
+          {/* Member */}
+          <Card className="dark:bg-[#141414] dark:border-[#202020]" title="Informasi Member">
             {transaction.member ? (
               <div className="flex flex-col gap-3">
                 <div className="text-center mb-2">

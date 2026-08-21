@@ -85,36 +85,45 @@ export const ProductDetailPage = () => {
         </div>
       </div>
 
-      <Card className="dark:bg-[#141414] dark:border-[#202020]" title="Riwayat Stok Masuk (Stock Supply Items)">
+      <Card className="dark:bg-[#141414] dark:border-[#202020]" title="Riwayat Stok Masuk">
         <Table
-          dataSource={product.stock_supply_items}
+          dataSource={product.stok_history}
           rowKey="id"
           pagination={false}
           scroll={{ x: 'max-content' }}
           columns={[
-            { title: 'ID', dataIndex: 'id' },
-            { 
-              title: 'Qty Masuk', 
+            {
+              title: 'Supplier',
+              dataIndex: 'suppliers',
+              key: 'suppliers',
+            },
+            {
+              title: 'Qty Masuk',
               dataIndex: 'quantity_in',
               align: 'right',
               render: (v) => <Text strong>{v}</Text>
             },
-            { 
-              title: 'Qty Sisa', 
+            {
+              title: 'Qty Sisa',
               dataIndex: 'quantity_remaining',
               align: 'right',
               render: (v) => <Text type={v === 0 ? 'danger' : 'success'} strong>{v}</Text>
             },
-            { 
-              title: 'Harga Beli/Pcs', 
+            {
+              title: 'Harga Beli/Pcs',
               dataIndex: 'purchase_price',
               align: 'right',
-              render: (val: number) => `Rp ${new Intl.NumberFormat('id-ID').format(val)}`
+              render: (val: string) => `Rp ${new Intl.NumberFormat('id-ID').format(Number(val))}`
             },
-            { 
-              title: 'Tgl Kedaluwarsa', 
+            {
+              title: 'Tgl Kedaluwarsa',
               dataIndex: 'expired_at',
               render: (val) => val ? new Date(val).toLocaleDateString('id-ID') : '-'
+            },
+            {
+              title: 'Tgl Masuk',
+              dataIndex: 'created_at',
+              render: (val) => new Date(val).toLocaleDateString('id-ID'),
             },
           ]}
         />
