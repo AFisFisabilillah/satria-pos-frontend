@@ -30,6 +30,11 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   addItem: (product: Product) => {
     const { cart } = get();
+
+    if (!product.active) {
+      return { success: false, message: `Produk "${product.name}" sedang tidak aktif!` };
+    }
+
     const existingIndex = cart.findIndex((item) => item.product_id === product.id);
 
     if (product.quantity <= 0) {

@@ -86,19 +86,21 @@ export const ProductCatalog = () => {
               const cartItem = cart.find((item) => item.product_id === product.id);
               const inCartQty = cartItem?.quantity || 0;
               const isOutOfStock = (product.quantity ?? 0) <= 0;
+              const isInactive = !product.active;
+              const isDisabled = isOutOfStock || isInactive;
 
               return (
                 <Badge.Ribbon
                   key={product.id}
-                  text={isOutOfStock ? 'Stok Habis' : undefined}
-                  color="red"
-                  style={{ display: isOutOfStock ? 'block' : 'none' }}
+                  text={isInactive ? 'Nonaktif' : (isOutOfStock ? 'Stok Habis' : undefined)}
+                  color={isInactive ? 'default' : 'red'}
+                  style={{ display: isDisabled ? 'block' : 'none' }}
                 >
                   <Card
-                    hoverable={!isOutOfStock}
-                    onClick={() => !isOutOfStock && handleAddToCart(product)}
+                    hoverable={!isDisabled}
+                    onClick={() => !isDisabled && handleAddToCart(product)}
                     className={`rounded-xl overflow-hidden transition-all duration-200 select-none flex flex-col justify-between h-full dark:bg-[#141414] dark:border-[#202020] ${
-                      isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''
+                      isDisabled ? 'opacity-50 cursor-not-allowed' : ''
                     } ${inCartQty > 0 ? 'border-primary ring-1 ring-primary' : ''}`}
                     cover={
                       <div className="relative w-full h-36 bg-slate-100 dark:bg-[#202020] overflow-hidden flex items-center justify-center">
@@ -133,9 +135,11 @@ export const ProductCatalog = () => {
                         <span className="font-bold text-primary text-sm sm:text-base">
                           Rp {(product.sale_price || 0).toLocaleString('id-ID')}
                         </span>
-                        {isOutOfStock && (
+                        {isInactive ? (
+                          <Tag color="default" className="m-0 text-xs">Nonaktif</Tag>
+                        ) : isOutOfStock ? (
                           <Tag color="red" className="m-0 text-xs">Habis</Tag>
-                        )}
+                        ) : null}
                       </div>
                     </div>
                   </Card>
