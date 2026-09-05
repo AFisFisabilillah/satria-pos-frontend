@@ -158,16 +158,19 @@ export const StockSupplyCreatePage = () => {
                         const prevProduct = prevValues.products?.[name];
                         const currentProduct = currentValues.products?.[name];
                         return prevProduct?.product_id !== currentProduct?.product_id ||
-                               prevProduct?.purchase_price !== currentProduct?.purchase_price;
+                               prevProduct?.purchase_price !== currentProduct?.purchase_price ||
+                               prevProduct?.quantity_in !== currentProduct?.quantity_in;
                       }}
                     >
                       {({ getFieldValue }) => {
                         const productId = getFieldValue(['products', name, 'product_id']);
                         const purchasePrice = getFieldValue(['products', name, 'purchase_price']) || 0;
+                        const quantityIn = getFieldValue(['products', name, 'quantity_in']) || 0;
                         const selectedProduct = productsData?.data?.find(p => p.id === productId);
                         const salePrice = selectedProduct?.sale_price || 0;
 
                         const profit = salePrice - purchasePrice;
+                        const totalProfit = profit * quantityIn;
                         const profitMargin = purchasePrice > 0 ? ((profit / purchasePrice) * 100).toFixed(2) : 0;
                         const isLoss = profit < 0;
                         const isProfit = profit > 0;
@@ -175,7 +178,7 @@ export const StockSupplyCreatePage = () => {
 
                         return (
                           <>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                               <Form.Item
                                 {...restField}
                                 name={[name, 'product_id']}
@@ -189,21 +192,18 @@ export const StockSupplyCreatePage = () => {
                                   loading={isProductsLoading}
                                   onSearch={setProductSearch}
                                   filterOption={false}
-                                  optionLabelProp="label"
                                   options={productsData?.data?.map((p) => ({
                                     value: p.id,
-                                    label: p.name,
-                                    labelRender: p.name,
-                                    children: (
-                                      <div className="flex items-center gap-2 py-1">
+                                    label: (
+                                      <div className="flex items-center gap-2 py-0.5">
                                         {p.image ? (
                                           <img
                                             src={p.image}
                                             alt={p.name}
-                                            className="w-8 h-8 object-cover rounded border border-slate-200 dark:border-[#232323]"
+                                            className="w-6 h-6 object-cover rounded border border-slate-200 dark:border-[#232323]"
                                           />
                                         ) : (
-                                          <div className="w-8 h-8 bg-slate-100 dark:bg-[#202020] rounded flex items-center justify-center border border-slate-200 dark:border-[#232323]">
+                                          <div className="w-6 h-6 bg-slate-100 dark:bg-[#202020] rounded flex items-center justify-center border border-slate-200 dark:border-[#232323]">
                                             <ShoppingCartOutlined className="text-slate-400 text-xs" />
                                           </div>
                                         )}
@@ -214,7 +214,6 @@ export const StockSupplyCreatePage = () => {
                                       </div>
                                     ),
                                   })) || []}
-                                  fieldNames={{ label: 'children', value: 'value' }}
                                   notFoundContent={
                                     isProductsLoading ? (
                                       <Spin size="small" />
@@ -260,6 +259,15 @@ export const StockSupplyCreatePage = () => {
                                 />
                               </Form.Item>
 
+                              <Form.Item label="Harga Jual Saat Ini" className="mb-0">
+                                <InputNumber
+                                  disabled
+                                  className="w-full"
+                                  value={salePrice}
+                                  formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                                />
+                              </Form.Item>
+
                               <Form.Item
                                 {...restField}
                                 name={[name, 'expired_date']}
@@ -271,15 +279,21 @@ export const StockSupplyCreatePage = () => {
                             </div>
 
                             {selectedProduct && (
-                              <div className="mt-4 p-3 bg-white dark:bg-[#141414] rounded-lg border border-slate-200 dark:border-[#202020] flex gap-6 items-center">
+                              <div className="mt-4 p-3 bg-white dark:bg-[#141414] rounded-lg border border-slate-200 dark:border-[#202020] flex flex-wrap gap-6 items-center">
                                 <div>
                                   <Text type="secondary" className="block text-xs">Harga Jual Saat Ini</Text>
                                   <Text strong>Rp {new Intl.NumberFormat('id-ID').format(salePrice)}</Text>
                                 </div>
                                 <div>
-                                  <Text type="secondary" className="block text-xs">Margin (Profit)</Text>
+                                  <Text type="secondary" className="block text-xs">Margin (Profit Satuan)</Text>
                                   <Text strong className={textColorClass}>
                                     {isProfit ? "+" : ""}Rp {new Intl.NumberFormat('id-ID').format(profit)} ({isProfit ? "+" : ""}{profitMargin}%)
+                                  </Text>
+                                </div>
+                                <div>
+                                  <Text type="secondary" className="block text-xs">Proyeksi Profit (Total Qty)</Text>
+                                  <Text strong className={textColorClass}>
+                                    {totalProfit > 0 ? "+" : ""}Rp {new Intl.NumberFormat('id-ID').format(totalProfit)}
                                   </Text>
                                 </div>
                               </div>
@@ -299,6 +313,41 @@ export const StockSupplyCreatePage = () => {
               </>
             )}
           </Form.List>
+
+          <Form.Item noStyle shouldUpdate>
+            {({ getFieldValue }) => {
+              const productsList: any[] = getFieldValue('products') || [];
+              let grandTotalPurchase = 0;
+              let grandTotalProfit = 0;
+
+              productsList.forEach((item) => {
+                const qty = item?.quantity_in || 0;
+                const purchasePrice = item?.purchase_price || 0;
+                const pData = productsData?.data?.find(p => p.id === item?.product_id);
+                const salePrice = pData?.sale_price || 0;
+
+                grandTotalPurchase += purchasePrice * qty;
+                grandTotalProfit += (salePrice - purchasePrice) * qty;
+              });
+
+              const grandTotalProfitClass = grandTotalProfit < 0 ? "text-red-500" : (grandTotalProfit > 0 ? "text-green-500" : "");
+
+              return (
+                <div className="p-4 bg-slate-100 dark:bg-[#1a1a1a] rounded-xl border border-slate-200 dark:border-[#262626] flex flex-wrap justify-between items-center gap-4 my-4">
+                  <div>
+                    <Text type="secondary" className="block text-xs font-semibold uppercase">Total Pembelian (Modal)</Text>
+                    <Text strong className="text-lg">Rp {new Intl.NumberFormat('id-ID').format(grandTotalPurchase)}</Text>
+                  </div>
+                  <div>
+                    <Text type="secondary" className="block text-xs font-semibold uppercase">Total Proyeksi Keuntungan</Text>
+                    <Text strong className={`text-lg ${grandTotalProfitClass}`}>
+                      {grandTotalProfit > 0 ? "+" : ""}Rp {new Intl.NumberFormat('id-ID').format(grandTotalProfit)}
+                    </Text>
+                  </div>
+                </div>
+              );
+            }}
+          </Form.Item>
 
           <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-slate-200 dark:border-[#202020]">
             <Button size="large" onClick={() => navigate('/super-admin/stock-supply')}>
