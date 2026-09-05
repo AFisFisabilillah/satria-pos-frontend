@@ -39,6 +39,7 @@ export interface StockSupplyDetailItem {
   product_summary: {
     id: number;
     name: string;
+    code?: string;
     image?: string;
   };
 }

@@ -12,7 +12,7 @@ import {
   DatePicker,
   InputNumber
 } from 'antd';
-import { ArrowLeftOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, MinusCircleOutlined, PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import type { AxiosError } from 'axios';
 import { useUpdateStockSupply, useStockSupply } from '../../../hooks/useStockSupply';
 import { useSuppliers } from '../../../hooks/useSuppliers';
@@ -56,11 +56,44 @@ export const StockSupplyUpdatePage = () => {
   // Build options that include existing products so Select shows their labels
   // even if they're not in the current search results page
   const existingProductOptions = stockSupply?.items?.map((item) => ({
-    label: item.product_summary.name,
     value: item.product_summary.id,
+    label: item.product_summary.name,
+    children: (
+      <div className="flex items-center gap-2 py-1">
+        <div className="w-8 h-8 bg-slate-100 dark:bg-[#202020] rounded flex items-center justify-center border border-slate-200 dark:border-[#232323]">
+          <ShoppingCartOutlined className="text-slate-400 text-xs" />
+        </div>
+        <div className="flex flex-col min-w-0">
+          <span className="font-medium text-xs leading-tight truncate">{item.product_summary.name}</span>
+          <span className="text-[10px] text-slate-400 leading-tight font-mono">{item.product_summary.code}</span>
+        </div>
+      </div>
+    ),
   })) || [];
 
-  const searchProductOptions = productsData?.data?.map((p) => ({ label: p.name, value: p.id })) || [];
+  const searchProductOptions = productsData?.data?.map((p) => ({
+    value: p.id,
+    label: p.name,
+    children: (
+      <div className="flex items-center gap-2 py-1">
+        {p.image ? (
+          <img
+            src={p.image}
+            alt={p.name}
+            className="w-8 h-8 object-cover rounded border border-slate-200 dark:border-[#232323]"
+          />
+        ) : (
+          <div className="w-8 h-8 bg-slate-100 dark:bg-[#202020] rounded flex items-center justify-center border border-slate-200 dark:border-[#232323]">
+            <ShoppingCartOutlined className="text-slate-400 text-xs" />
+          </div>
+        )}
+        <div className="flex flex-col min-w-0">
+          <span className="font-medium text-xs leading-tight truncate">{p.name}</span>
+          <span className="text-[10px] text-slate-400 leading-tight font-mono">{p.code}</span>
+        </div>
+      </div>
+    ),
+  })) || [];
 
   // Merge: search results + existing (deduplicated)
   const mergedProductOptions = [
@@ -244,8 +277,25 @@ export const StockSupplyUpdatePage = () => {
                                   loading={isProductsLoading}
                                   onSearch={setProductSearch}
                                   filterOption={false}
+                                  optionLabelProp="label"
                                   options={mergedProductOptions}
-                                  notFoundContent={isProductsLoading ? <Spin size="small" /> : null}
+                                  fieldNames={{ label: 'children', value: 'value' }}
+                                  notFoundContent={
+                                    isProductsLoading ? (
+                                      <Spin size="small" />
+                                    ) : debouncedProductSearch ? (
+                                      <div className="p-2 flex flex-col gap-2 text-center">
+                                        <Text type="secondary">Produk "{debouncedProductSearch}" tidak ditemukan.</Text>
+                                        <Button
+                                          type="dashed"
+                                          size="small"
+                                          onClick={() => navigate('/super-admin/product/create')}
+                                        >
+                                          Tambah Produk Baru
+                                        </Button>
+                                      </div>
+                                    ) : null
+                                  }
                                 />
                               </Form.Item>
 
