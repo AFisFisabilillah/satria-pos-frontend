@@ -11,14 +11,17 @@ import {
   Typography,
   Modal,
   Tag,
-  Spin
+  Spin,
+  Collapse
 } from 'antd';
 import {
   PlusOutlined,
   MinusOutlined,
   DeleteOutlined,
   ShoppingCartOutlined,
-  CheckCircleOutlined
+  CheckCircleOutlined,
+  UserOutlined,
+  GiftOutlined
 } from '@ant-design/icons';
 import { useCartStore } from '../../store/useCartStore';
 import { useMembers } from '../../hooks/useMembers';
@@ -148,92 +151,136 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-[#141414] rounded-xl border border-slate-200 dark:border-[#202020] p-4 shadow-sm">
-      {/* Header / Member & Voucher Section */}
-      <div className="flex flex-col gap-3 pb-3 border-b border-slate-100 dark:border-[#202020]">
-        <div>
-          <div className="flex justify-between items-center mb-1">
-            <Text className="text-xs font-semibold text-slate-500">Pilih Member (Opsional)</Text>
-            <Button
-              type="link"
-              size="small"
-              icon={<PlusOutlined />}
-              onClick={() => setIsMemberModalOpen(true)}
-              className="p-0 text-xs text-[#ff6a00] hover:text-[#e55e00]"
-            >
-              Tambah Member
-            </Button>
-          </div>
-          <Select
-            showSearch
-            allowClear
-            placeholder="Cari Member..."
-            loading={isMembersLoading}
-            value={selectedMemberId}
-            onChange={setSelectedMemberId}
-            onSearch={setMemberSearch}
-            filterOption={false}
-            className="w-full"
-            options={membersData?.data?.map((m) => ({
-              label: `${m.name} (${m.phone || '-'})`,
-              value: m.id,
-            }))}
-            dropdownRender={(menu) => (
-              <>
-                {menu}
-                <Divider style={{ margin: '8px 0' }} />
-                <div className="p-1">
-                  <Button
-                    type="text"
-                    block
-                    icon={<PlusOutlined />}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => setIsMemberModalOpen(true)}
-                    className="text-[#ff6a00] hover:text-[#e55e00] text-left font-medium"
-                  >
-                    Tambah Member Baru
-                  </Button>
+      {/* Header / Member & Voucher Accordion Section */}
+      <div className="pb-3 border-b border-slate-100 dark:border-[#202020]">
+        <Collapse
+          ghost
+          size="small"
+          className="bg-transparent!"
+          items={[
+            {
+              key: 'member',
+              label: (
+                <div className="flex items-center justify-between w-full pr-2">
+                  <div className="flex items-center gap-2">
+                    <UserOutlined className="text-[#ff6a00]" />
+                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                      Member {selectedMemberId ? `(Terpilih)` : '(Opsional)'}
+                    </span>
+                  </div>
+                  {selectedMemberId && (
+                    <Tag color="orange" className="m-0 text-[10px]">
+                      {membersData?.data?.find((m) => m.id === selectedMemberId)?.name || '1 Member'}
+                    </Tag>
+                  )}
                 </div>
-              </>
-            )}
-            notFoundContent={
-              isMembersLoading ? (
-                <div className="flex justify-center p-2"><Spin size="small" /></div>
-              ) : (
-                <div className="p-2 flex flex-col gap-2 text-center">
-                  <Text type="secondary">
-                    {memberSearch ? `Member "${memberSearch}" tidak ditemukan.` : 'Tidak ada member.'}
-                  </Text>
-                  <Button
-                    type="dashed"
-                    size="small"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => setIsMemberModalOpen(true)}
-                  >
-                    Tambah Member Baru
-                  </Button>
+              ),
+              children: (
+                <div className="flex flex-col gap-2 pt-1">
+                  <div className="flex justify-end">
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<PlusOutlined />}
+                      onClick={() => setIsMemberModalOpen(true)}
+                      className="p-0 text-xs text-[#ff6a00] hover:text-[#e55e00]"
+                    >
+                      Tambah Member Baru
+                    </Button>
+                  </div>
+                  <Select
+                    showSearch
+                    allowClear
+                    placeholder="Cari Member..."
+                    loading={isMembersLoading}
+                    value={selectedMemberId}
+                    onChange={setSelectedMemberId}
+                    onSearch={setMemberSearch}
+                    filterOption={false}
+                    className="w-full"
+                    options={membersData?.data?.map((m) => ({
+                      label: `${m.name} (${m.phone || '-'})`,
+                      value: m.id,
+                    }))}
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+                        <Divider style={{ margin: '8px 0' }} />
+                        <div className="p-1">
+                          <Button
+                            type="text"
+                            block
+                            icon={<PlusOutlined />}
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => setIsMemberModalOpen(true)}
+                            className="text-[#ff6a00] hover:text-[#e55e00] text-left font-medium"
+                          >
+                            Tambah Member Baru
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                    notFoundContent={
+                      isMembersLoading ? (
+                        <div className="flex justify-center p-2"><Spin size="small" /></div>
+                      ) : (
+                        <div className="p-2 flex flex-col gap-2 text-center">
+                          <Text type="secondary">
+                            {memberSearch ? `Member "${memberSearch}" tidak ditemukan.` : 'Tidak ada member.'}
+                          </Text>
+                          <Button
+                            type="dashed"
+                            size="small"
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => setIsMemberModalOpen(true)}
+                          >
+                            Tambah Member Baru
+                          </Button>
+                        </div>
+                      )
+                    }
+                  />
                 </div>
-              )
-            }
-          />
-        </div>
-
-        <div>
-          <Text className="block text-xs font-semibold text-slate-500 mb-1">Voucher (Opsional)</Text>
-          <Select
-            mode="multiple"
-            allowClear
-            placeholder="Pilih Voucher..."
-            loading={isVouchersLoading}
-            value={selectedVouchers.map((v) => v.id)}
-            onChange={handleVoucherChange}
-            className="w-full"
-            maxTagCount="responsive"
-            options={activeVouchers.map((v) => ({
-              label: `${v.name} (${v.type === 'percent' ? `${v.value}%` : `Rp ${Number(v.value).toLocaleString('id-ID')}`})`,
-              value: v.id,
-            }))}
-          />
-        </div>
+              ),
+            },
+            {
+              key: 'voucher',
+              label: (
+                <div className="flex items-center justify-between w-full pr-2">
+                  <div className="flex items-center gap-2">
+                    <GiftOutlined className="text-[#ff6a00]" />
+                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                      Voucher {selectedVouchers.length > 0 ? `(${selectedVouchers.length})` : '(Opsional)'}
+                    </span>
+                  </div>
+                  {selectedVouchers.length > 0 && (
+                    <Tag color="green" className="m-0 text-[10px]">
+                      Diskon Rp {discountAmount.toLocaleString('id-ID')}
+                    </Tag>
+                  )}
+                </div>
+              ),
+              children: (
+                <div className="pt-1">
+                  <Select
+                    mode="multiple"
+                    allowClear
+                    placeholder="Pilih Voucher..."
+                    loading={isVouchersLoading}
+                    value={selectedVouchers.map((v) => v.id)}
+                    onChange={handleVoucherChange}
+                    className="w-full"
+                    maxTagCount="responsive"
+                    options={activeVouchers.map((v) => ({
+                      label: `${v.name} (${v.type === 'percent' ? `${v.value}%` : `Rp ${Number(v.value).toLocaleString('id-ID')}`})`,
+                      value: v.id,
+                    }))}
+                  />
+                </div>
+              ),
+            },
+          ]}
+        />
       </div>
 
       {/* Cart List */}
