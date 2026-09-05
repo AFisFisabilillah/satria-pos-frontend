@@ -10,7 +10,8 @@ import {
   App,
   Typography,
   Modal,
-  Tag
+  Tag,
+  Spin
 } from 'antd';
 import {
   PlusOutlined,
@@ -24,6 +25,8 @@ import { useMembers } from '../../hooks/useMembers';
 import { useVouchers } from '../../hooks/useVouchers';
 import { useCheckout } from '../../hooks/useCheckout';
 import type { PaymentMethod } from '../../types/checkout';
+import { MemberModal } from '../member/MemberModal';
+import { useDebounce } from 'use-debounce';
 
 const { Text, Title } = Typography;
 
@@ -34,10 +37,12 @@ interface CheckoutSummaryProps {
 export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) => {
   const { message, notification } = App.useApp();
   const [memberSearch, setMemberSearch] = useState('');
+  const [debouncedMemberSearch] = useDebounce(memberSearch, 500);
   const [successModalData, setSuccessModalData] = useState<any>(null);
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
 
   const { data: membersData, isLoading: isMembersLoading } = useMembers({
-    name: memberSearch || undefined,
+    name: debouncedMemberSearch || undefined,
     size: 20,
   });
 
@@ -146,7 +151,18 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
       {/* Header / Member & Voucher Section */}
       <div className="flex flex-col gap-3 pb-3 border-b border-slate-100 dark:border-[#202020]">
         <div>
-          <Text className="block text-xs font-semibold text-slate-500 mb-1">Pilih Member (Opsional)</Text>
+          <div className="flex justify-between items-center mb-1">
+            <Text className="text-xs font-semibold text-slate-500">Pilih Member (Opsional)</Text>
+            <Button
+              type="link"
+              size="small"
+              icon={<PlusOutlined />}
+              onClick={() => setIsMemberModalOpen(true)}
+              className="p-0 text-xs text-[#ff6a00] hover:text-[#e55e00]"
+            >
+              Tambah Member
+            </Button>
+          </div>
           <Select
             showSearch
             allowClear
@@ -161,6 +177,43 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
               label: `${m.name} (${m.phone || '-'})`,
               value: m.id,
             }))}
+            dropdownRender={(menu) => (
+              <>
+                {menu}
+                <Divider style={{ margin: '8px 0' }} />
+                <div className="p-1">
+                  <Button
+                    type="text"
+                    block
+                    icon={<PlusOutlined />}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => setIsMemberModalOpen(true)}
+                    className="text-[#ff6a00] hover:text-[#e55e00] text-left font-medium"
+                  >
+                    Tambah Member Baru
+                  </Button>
+                </div>
+              </>
+            )}
+            notFoundContent={
+              isMembersLoading ? (
+                <div className="flex justify-center p-2"><Spin size="small" /></div>
+              ) : (
+                <div className="p-2 flex flex-col gap-2 text-center">
+                  <Text type="secondary">
+                    {memberSearch ? `Member "${memberSearch}" tidak ditemukan.` : 'Tidak ada member.'}
+                  </Text>
+                  <Button
+                    type="dashed"
+                    size="small"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => setIsMemberModalOpen(true)}
+                  >
+                    Tambah Member Baru
+                  </Button>
+                </div>
+              )
+            }
           />
         </div>
 
@@ -387,6 +440,11 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
           </div>
         </Modal>
       )}
+
+      <MemberModal
+        open={isMemberModalOpen}
+        onCancel={() => setIsMemberModalOpen(false)}
+      />
     </div>
   );
 };
