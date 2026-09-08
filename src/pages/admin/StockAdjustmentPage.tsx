@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Table, Input, Card, Typography, DatePicker, Select, Tag, Avatar, Space } from 'antd';
-import { SearchOutlined, UserOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router';
+import { Table, Input, Card, Typography, DatePicker, Select, Tag, Avatar, Space, Button } from 'antd';
+import { SearchOutlined, UserOutlined, ShoppingCartOutlined, PlusOutlined } from '@ant-design/icons';
 import { useStockAdjustments } from '../../hooks/useStockAdjustments';
 import dayjs from 'dayjs';
 
@@ -8,6 +9,7 @@ const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
 export const StockAdjustmentPage = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [type, setType] = useState<string | undefined>();
   const [dateRange, setDateRange] = useState<[string, string] | undefined>();
@@ -99,11 +101,22 @@ export const StockAdjustmentPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <Title level={3} className="!m-0">Penyesuaian Stok (Stock Adjustment)</Title>
-        <span className="text-slate-500 dark:text-slate-400 text-sm">
-          Riwayat pencatatan barang rusak, hilang, expired, atau koreksi stok
-        </span>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <Title level={3} className="m-0!">Penyesuaian Stok (Stock Adjustment)</Title>
+          <span className="text-slate-500 dark:text-slate-400 text-sm">
+            Riwayat pencatatan barang rusak, hilang, expired, atau koreksi stok
+          </span>
+        </div>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => navigate('/super-admin/stock-adjustment/create')}
+          size="large"
+          className="bg-[#ff6a00] hover:bg-[#e55e00] border-none"
+        >
+          Tambah Adjustment
+        </Button>
       </div>
 
       <Card className="dark:bg-[#141414] dark:border-[#202020] shadow-sm">
