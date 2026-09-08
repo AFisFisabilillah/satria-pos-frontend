@@ -17,6 +17,7 @@ import {
   GiftOutlined,
   UserOutlined,
   RollbackOutlined,
+  DiffOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router";
 
@@ -80,6 +81,11 @@ export const SuperAdminLayout = ({ children }: AdminGudangLayoutProps) => {
           key: '/super-admin/stock-supply',
           label: <Link to="/super-admin/stock-supply">Stock Supply</Link>,
           icon: <InboxOutlined />
+        },
+        {
+          key: '/super-admin/stock-adjustment',
+          label: <Link to="/super-admin/stock-adjustment">Stock Adjustment</Link>,
+          icon: <DiffOutlined />
         },
         {
           key: '/super-admin/supplier-return',
