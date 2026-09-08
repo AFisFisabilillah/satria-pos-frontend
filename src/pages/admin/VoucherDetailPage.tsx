@@ -1,7 +1,8 @@
-import { useParams, useNavigate } from 'react-router';
-import { Card, Descriptions, Typography, Button, Spin, Tag } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { useParams, useNavigate, Link } from 'react-router';
+import { Card, Descriptions, Typography, Button, Spin, Tag, Table } from 'antd';
+import { ArrowLeftOutlined, EyeOutlined } from '@ant-design/icons';
 import { useVoucher } from '../../hooks/useVouchers';
+import type { VoucherTransaction } from '../../types/voucher';
 import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
@@ -27,8 +28,57 @@ export const VoucherDetailPage = () => {
 
   const isExpired = dayjs(voucher.expired_at).isBefore(dayjs(), 'day');
 
+  const columns = [
+    {
+      title: 'Nomor Invoice',
+      dataIndex: 'invoice_number',
+      key: 'invoice_number',
+      render: (text: string, record: VoucherTransaction) => (
+        <Link to={`/super-admin/transaction/${record.id}`} className="font-mono text-[#ff6a00] hover:underline">
+          {text}
+        </Link>
+      ),
+    },
+    {
+      title: 'Total Harga',
+      dataIndex: 'total_price',
+      key: 'total_price',
+      render: (val: number) => <Text strong>Rp {val.toLocaleString('id-ID')}</Text>,
+    },
+    {
+      title: 'Metode Pembayaran',
+      dataIndex: 'payment_method',
+      key: 'payment_method',
+      render: (val: string) => (
+        <Tag color="blue" className="uppercase font-semibold text-xs">
+          {val}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Tanggal Transaksi',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (val: string) => dayjs(val).format('DD MMMM YYYY, HH:mm'),
+    },
+    {
+      title: 'Aksi',
+      key: 'action',
+      render: (_: any, record: VoucherTransaction) => (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          onClick={() => navigate(`/super-admin/transaction/${record.id}`)}
+          className="text-[#ff6a00] hover:text-[#e55e00] p-0"
+        >
+          Detail
+        </Button>
+      ),
+    },
+  ];
+
   return (
-    <div className="flex flex-col gap-6 max-w-4xl mx-auto w-full">
+    <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full">
       <div className="flex items-center gap-4">
         <Button
           icon={<ArrowLeftOutlined />}
@@ -40,7 +90,7 @@ export const VoucherDetailPage = () => {
       </div>
 
       <Card className="dark:bg-[#141414] dark:border-[#202020] shadow-sm">
-        <Descriptions layout="vertical" column={{ xs: 1, sm: 2, md: 3 }} size="middle" className="mb-6" bordered>
+        <Descriptions layout="vertical" column={{ xs: 1, sm: 2, md: 3 }} size="middle" bordered>
           <Descriptions.Item label={<Text className="text-slate-500">Nama Voucher</Text>}>
             <Text strong>{voucher.name}</Text>
           </Descriptions.Item>
@@ -93,6 +143,19 @@ export const VoucherDetailPage = () => {
             <Text>{dayjs(voucher.created_at).format('DD MMMM YYYY HH:mm')}</Text>
           </Descriptions.Item>
         </Descriptions>
+      </Card>
+
+      <Card
+        title={<Title level={4} className="m-0!">Riwayat Penggunaan Voucher</Title>}
+        className="dark:bg-[#141414] dark:border-[#202020] shadow-sm"
+      >
+        <Table
+          columns={columns}
+          dataSource={voucher.transactions || []}
+          rowKey="id"
+          pagination={{ pageSize: 5 }}
+          locale={{ emptyText: 'Belum ada transaksi yang menggunakan voucher ini' }}
+        />
       </Card>
     </div>
   );

@@ -1,3 +1,15 @@
+export interface VoucherTransaction {
+  id: number;
+  invoice_number: string;
+  total_price: number;
+  paid_amount: number;
+  change_amount: number;
+  payment_method: string;
+  created_at: string;
+  updated_at: string;
+  items_count?: number | null;
+}
+
 export interface Voucher {
   id: number;
   name: string;
@@ -8,6 +20,7 @@ export interface Voucher {
   quota: number;
   expired_at: string;
   active: number;
+  transactions?: VoucherTransaction[];
   created_at: string;
   updated_at: string;
 }

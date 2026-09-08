@@ -1,3 +1,15 @@
+export interface MemberTransaction {
+  id: number;
+  invoice_number: string;
+  total_price: number;
+  paid_amount: number;
+  change_amount: number;
+  payment_method: string;
+  created_at: string;
+  updated_at: string;
+  items_count?: number | null;
+}
+
 export interface Member {
   id: number;
   name: string;
@@ -6,6 +18,7 @@ export interface Member {
   email?: string;
   total_spent: number;
   active: boolean;
+  transaction?: MemberTransaction[];
   created_at: string;
   updated_at: string;
 }

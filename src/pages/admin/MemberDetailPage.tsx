@@ -1,7 +1,8 @@
-import { useParams, useNavigate } from 'react-router';
-import { Card, Descriptions, Typography, Button, Spin, Tag, Space } from 'antd';
-import { ArrowLeftOutlined, EditOutlined } from '@ant-design/icons';
+import { useParams, useNavigate, Link } from 'react-router';
+import { Card, Descriptions, Typography, Button, Spin, Tag, Space, Table } from 'antd';
+import { ArrowLeftOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { useMember } from '../../hooks/useMembers';
+import type { MemberTransaction } from '../../types/member';
 import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
@@ -26,14 +27,60 @@ export const MemberDetailPage = () => {
   }
 
   const handleEdit = () => {
-    // Karena form edit member menggunakan modal di halaman list,
-    // di halaman detail kita sediakan navigasi kembali ke list
-    // atau biarkan user melihat secara read-only
     navigate('/super-admin/member');
   };
 
+  const columns = [
+    {
+      title: 'Nomor Invoice',
+      dataIndex: 'invoice_number',
+      key: 'invoice_number',
+      render: (text: string, record: MemberTransaction) => (
+        <Link to={`/super-admin/transaction/${record.id}`} className="font-mono text-[#ff6a00] hover:underline">
+          {text}
+        </Link>
+      ),
+    },
+    {
+      title: 'Total Harga',
+      dataIndex: 'total_price',
+      key: 'total_price',
+      render: (val: number) => <Text strong>Rp {val.toLocaleString('id-ID')}</Text>,
+    },
+    {
+      title: 'Metode Pembayaran',
+      dataIndex: 'payment_method',
+      key: 'payment_method',
+      render: (val: string) => (
+        <Tag color="blue" className="uppercase font-semibold text-xs">
+          {val}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Tanggal Transaksi',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (val: string) => dayjs(val).format('DD MMMM YYYY, HH:mm'),
+    },
+    {
+      title: 'Aksi',
+      key: 'action',
+      render: (_: any, record: MemberTransaction) => (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          onClick={() => navigate(`/super-admin/transaction/${record.id}`)}
+          className="text-[#ff6a00] hover:text-[#e55e00] p-0"
+        >
+          Detail
+        </Button>
+      ),
+    },
+  ];
+
   return (
-    <div className="flex flex-col gap-6 max-w-4xl mx-auto w-full">
+    <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full">
       <div className="flex justify-between items-center gap-4">
         <div className="flex items-center gap-4">
           <Button
@@ -91,6 +138,19 @@ export const MemberDetailPage = () => {
             <Text strong>{dayjs(member.updated_at).format('DD MMMM YYYY, HH:mm')}</Text>
           </Descriptions.Item>
         </Descriptions>
+      </Card>
+
+      <Card
+        title={<Title level={4} className="!m-0">Riwayat Transaksi</Title>}
+        className="dark:bg-[#141414] dark:border-[#202020] shadow-sm"
+      >
+        <Table
+          columns={columns}
+          dataSource={member.transaction || []}
+          rowKey="id"
+          pagination={{ pageSize: 5 }}
+          locale={{ emptyText: 'Belum ada riwayat transaksi' }}
+        />
       </Card>
     </div>
   );
