@@ -30,6 +30,10 @@ import { TransactionDetailPage } from './pages/admin/transaction/TransactionDeta
 import { UserPage } from './pages/admin/UserPage.tsx';
 import { ProfilePage } from './pages/admin/ProfilePage.tsx';
 
+import { SupplierReturnPage } from './pages/admin/SupplierReturnPage.tsx';
+import { SupplierReturnCreatePage } from './pages/admin/SupplierReturnCreatePage.tsx';
+import { SupplierReturnDetailPage } from './pages/admin/SupplierReturnDetailPage.tsx';
+
 export function AppWrapper() {
   const { isDarkMode } = useTheme();
 
@@ -73,6 +77,9 @@ export function AppWrapper() {
               <Route path='stock-supply/create' element={<StockSupplyCreatePage/>} />
               <Route path='stock-supply/:id/edit' element={<StockSupplyUpdatePage/>} />
               <Route path='stock-supply/:id' element={<StockSupplyDetailPage/>} />
+              <Route path='supplier-return' element={<SupplierReturnPage/>} />
+              <Route path='supplier-return/create' element={<SupplierReturnCreatePage/>} />
+              <Route path='supplier-return/:id' element={<SupplierReturnDetailPage/>} />
               <Route path='voucher' element={<VoucherPage/>} />
               <Route path='voucher/:id' element={<VoucherDetailPage/>} />
               <Route path='voucher/create' element={<VoucherCreatePage/>} />
