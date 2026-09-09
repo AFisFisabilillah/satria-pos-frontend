@@ -35,6 +35,7 @@ import { SupplierReturnCreatePage } from './pages/admin/SupplierReturnCreatePage
 import { SupplierReturnDetailPage } from './pages/admin/SupplierReturnDetailPage.tsx';
 import { StockAdjustmentPage } from './pages/admin/StockAdjustmentPage.tsx';
 import { StockAdjustmentCreatePage } from './pages/admin/StockAdjustmentCreatePage.tsx';
+import { StockAdjustmentDetailPage } from './pages/admin/StockAdjustmentDetailPage.tsx';
 
 export function AppWrapper() {
   const { isDarkMode } = useTheme();
@@ -80,6 +81,7 @@ export function AppWrapper() {
               <Route path='stock-supply/:id/edit' element={<StockSupplyUpdatePage/>} />
               <Route path='stock-supply/:id' element={<StockSupplyDetailPage/>} />
               <Route path='stock-adjustment' element={<StockAdjustmentPage/>} />
+              <Route path='stock-adjustment/:id' element={<StockAdjustmentDetailPage/>} />
               <Route path='stock-adjustment/create' element={<StockAdjustmentCreatePage/>} />
               <Route path='supplier-return' element={<SupplierReturnPage/>} />
               <Route path='supplier-return/create' element={<SupplierReturnCreatePage/>} />

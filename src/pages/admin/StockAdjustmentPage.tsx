@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Table, Input, Card, Typography, DatePicker, Select, Tag, Avatar, Space, Button } from 'antd';
-import { SearchOutlined, UserOutlined, ShoppingCartOutlined, PlusOutlined } from '@ant-design/icons';
+import { SearchOutlined, UserOutlined, ShoppingCartOutlined, PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import { useStockAdjustments } from '../../hooks/useStockAdjustments';
+import type { StockAdjustment } from '../../types/stockAdjustment';
 import dayjs from 'dayjs';
 
 const { Title } = Typography;
@@ -96,6 +97,20 @@ export const StockAdjustmentPage = () => {
       dataIndex: 'created_at',
       key: 'created_at',
       render: (val: string) => dayjs(val).format('DD MMMM YYYY, HH:mm'),
+    },
+    {
+      title: 'Aksi',
+      key: 'action',
+      render: (_: any, record: StockAdjustment) => (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          onClick={() => navigate(`/super-admin/stock-adjustment/${record.id}`)}
+          className="text-[#ff6a00] hover:text-[#e55e00] p-0"
+        >
+          Detail
+        </Button>
+      ),
     },
   ];
 
