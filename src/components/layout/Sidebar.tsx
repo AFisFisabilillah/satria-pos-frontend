@@ -10,16 +10,17 @@ interface SidebarProps {
   menuItems: any[];
   isMobile: boolean;
   setCollapsed: (collapsed: boolean) => void;
+  sidebarRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-export const Sidebar = ({ collapsed, menuItems, isMobile, setCollapsed }: SidebarProps) => {
+export const Sidebar = ({ collapsed, menuItems, isMobile, setCollapsed, sidebarRef }: SidebarProps) => {
   const location = useLocation();
   const userString = localStorage.getItem('user');
   const user: User | null = userString ? JSON.parse(userString) : null;
   const profileLink = user?.role === 'super_admin' ? '/super-admin/profile' : null;
 
   const siderContent = (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div ref={sidebarRef} className="flex flex-col h-full overflow-hidden">
       {/* Header Logo (Fixed) */}
       <div
         className="flex items-center h-16 m-3 rounded-xl bg-slate-100 dark:bg-linear-to-br dark:from-[#111111] dark:to-[#171717] border border-slate-200 dark:border-[#232323] shrink-0"
