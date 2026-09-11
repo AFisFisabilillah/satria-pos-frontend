@@ -125,8 +125,9 @@ export default function DashboardPage() {
           <Text type="secondary" className="text-sm">Ringkasan performa penjualan dan persediaan stok</Text>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto overflow-x-auto max-w-full pb-1">
           <Segmented<DashboardPeriod>
+            className="max-w-full overflow-x-auto"
             options={[
               { label: 'Hari ini', value: 'today' },
               { label: 'Minggu', value: 'week' },
