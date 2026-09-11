@@ -25,8 +25,15 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
 
 export function PublicRoute() {
   const token = localStorage.getItem('token');
+  const userStr = localStorage.getItem('user');
 
-  if (token) {
+  if (token && userStr) {
+    const user: User = JSON.parse(userStr);
+    if (user.role === 'super_admin' || user.role === 'admin') {
+      return <Navigate to="/super-admin" replace />;
+    } else if (user.role === 'cashier') {
+      return <Navigate to="/kasir" replace />;
+    }
     return <Navigate to="/" replace />;
   }
 

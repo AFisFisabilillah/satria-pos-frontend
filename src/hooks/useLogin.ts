@@ -20,7 +20,15 @@ export function useLogin(options?: UseLoginOptions) {
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       options?.onSuccess?.();
-      navigate('/');
+
+      const role = res.data.user?.role;
+      if (role === 'super_admin' || role === 'admin') {
+        navigate('/super-admin');
+      } else if (role === 'kasir') {
+        navigate('/kasir');
+      } else {
+        navigate('/');
+      }
     },
     onError: (err: AxiosError) => {
       options?.onError?.(err);

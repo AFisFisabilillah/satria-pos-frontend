@@ -66,7 +66,7 @@ export const KasirPage = () => {
         <div className="flex items-center gap-3">
           <Button
             icon={<ArrowLeftOutlined />}
-            onClick={() => navigate('/super-admin')}
+            onClick={() => navigate('/kasir/profile')}
             type="text"
             className="hover:bg-slate-100 dark:hover:bg-[#202020]"
           />

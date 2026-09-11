@@ -4,6 +4,7 @@ import { themeTokens } from './theme/token.ts';
 import { useTheme } from './contexts/ThemeContext';
 import LoginPage from './pages/auth/LoginPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
+import { LandingPage } from './pages/LandingPage.tsx';
 import { ProtectedRoute, PublicRoute } from './components/auth/ProtectedRoute';
 import { SuperAdminLayout } from './components/layout/SuperAdminLayout.tsx';
 import { ProductPage } from './pages/admin/ProductPage.tsx';
@@ -37,6 +38,8 @@ import { StockAdjustmentPage } from './pages/admin/StockAdjustmentPage.tsx';
 import { StockAdjustmentCreatePage } from './pages/admin/StockAdjustmentCreatePage.tsx';
 import { StockAdjustmentDetailPage } from './pages/admin/StockAdjustmentDetailPage.tsx';
 
+import { KasirLayout } from './components/layout/KasirLayout.tsx';
+
 export function AppWrapper() {
   const { isDarkMode } = useTheme();
 
@@ -59,9 +62,14 @@ export function AppWrapper() {
               <Route path="/login" element={<LoginPage />} />
             </Route>
 
-            <Route element={<ProtectedRoute />}>
-              <Route path="/" element={<DashboardPage />} />
+            <Route path="/" element={<LandingPage />} />
+
+            <Route element={<ProtectedRoute allowedRoles={['super_admin', 'cashier']} />}>
               <Route path="/kasir" element={<KasirPage />} />
+            </Route>
+
+            <Route path="/kasir" element={<KasirLayout><ProtectedRoute allowedRoles={['super_admin', 'cashier']} /></KasirLayout>}>
+              <Route path="profile" element={<ProfilePage />} />
             </Route>
 
             <Route path='/super-admin' element={<SuperAdminLayout><ProtectedRoute allowedRoles={['super_admin']} /></SuperAdminLayout>} >
