@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import {
   Select,
-  List,
-  InputNumber,
+  Input,
   Button,
   Radio,
   Divider,
-  Popconfirm,
   App,
   Typography,
   Modal,
@@ -16,9 +14,6 @@ import {
 } from 'antd';
 import {
   PlusOutlined,
-  MinusOutlined,
-  DeleteOutlined,
-  ShoppingCartOutlined,
   CheckCircleOutlined,
   UserOutlined,
   GiftOutlined
@@ -62,8 +57,6 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
     selectedVouchers,
     paymentMethod,
     paidAmount,
-    removeItem,
-    updateQuantity,
     setSelectedMemberId,
     setSelectedVouchers,
     setPaymentMethod,
@@ -112,13 +105,6 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
     },
   });
 
-  const handleUpdateQty = (productId: number, newQty: number) => {
-    const res = updateQuantity(productId, newQty);
-    if (!res.success && res.message) {
-      message.error(res.message);
-    }
-  };
-
   const handleVoucherChange = (voucherIds: number[]) => {
     const selected = activeVouchers.filter((v) => voucherIds.includes(v.id));
     setSelectedVouchers(selected);
@@ -150,7 +136,7 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
   };
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-[#141414] rounded-xl border border-slate-200 dark:border-[#202020] p-4 shadow-sm">
+    <div className="flex flex-col h-full justify-between bg-white dark:bg-[#141414] rounded-xl border border-slate-200 dark:border-[#202020] p-4 shadow-sm">
       {/* Header / Member & Voucher Accordion Section */}
       <div className="pb-3 border-b border-slate-100 dark:border-[#202020]">
         <Collapse
@@ -283,90 +269,8 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
         />
       </div>
 
-      {/* Cart List */}
-      <div className="flex-1 overflow-y-auto my-3 pr-1">
-        {cart.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 text-slate-400">
-            <ShoppingCartOutlined className="text-4xl mb-2" />
-            <Text type="secondary">Keranjang Belanja Kosong</Text>
-          </div>
-        ) : (
-          <List
-            itemLayout="horizontal"
-            dataSource={cart}
-            renderItem={(item) => (
-              <List.Item
-                className="px-0! py-3! border-b border-slate-100 dark:border-[#202020]"
-                actions={[
-                  <Popconfirm
-                    key="delete"
-                    title="Hapus item?"
-                    onConfirm={() => removeItem(item.product_id)}
-                    okText="Ya"
-                    cancelText="Tidak"
-                  >
-                    <Button type="text" danger icon={<DeleteOutlined />} size="small" />
-                  </Popconfirm>,
-                ]}
-              >
-                <List.Item.Meta
-                  avatar={
-                    item.image ? (
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-12 h-12 object-cover rounded-lg border border-slate-200 dark:border-[#202020]"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 bg-slate-100 dark:bg-[#202020] rounded-lg flex items-center justify-center text-slate-400">
-                        <ShoppingCartOutlined />
-                      </div>
-                    )
-                  }
-                  title={
-                    <span className="font-semibold text-sm line-clamp-1 text-slate-800 dark:text-slate-100">
-                      {item.name}
-                    </span>
-                  }
-                  description={
-                    <div className="flex flex-col gap-1 mt-1">
-                      <span className="text-xs text-slate-500">
-                        Rp {item.price.toLocaleString('id-ID')} x {item.quantity} ={' '}
-                        <strong className="text-slate-800 dark:text-slate-200">
-                          Rp {(item.price * item.quantity).toLocaleString('id-ID')}
-                        </strong>
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          size="small"
-                          icon={<MinusOutlined />}
-                          onClick={() => handleUpdateQty(item.product_id, item.quantity - 1)}
-                        />
-                        <InputNumber
-                          size="small"
-                          min={1}
-                          max={item.stock}
-                          value={item.quantity}
-                          onChange={(val) => val && handleUpdateQty(item.product_id, val)}
-                          className="w-14 text-center"
-                        />
-                        <Button
-                          size="small"
-                          icon={<PlusOutlined />}
-                          onClick={() => handleUpdateQty(item.product_id, item.quantity + 1)}
-                        />
-                      </div>
-                    </div>
-                  }
-                />
-              </List.Item>
-            )}
-          />
-        )}
-      </div>
-
       {/* Summary Footer & Payment */}
-      <div className="pt-3 border-t border-slate-100 dark:border-[#202020] flex flex-col gap-3">
+      <div className="pt-3 flex flex-col gap-3">
         {/* Price Breakdown */}
         <div className="flex flex-col gap-1.5 text-sm">
           <div className="flex justify-between text-slate-500">
@@ -408,15 +312,15 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
           <div className="flex flex-col gap-2 bg-slate-50 dark:bg-[#1a1a1a] p-3 rounded-lg border border-slate-200 dark:border-[#262626]">
             <div className="flex justify-between items-center">
               <Text className="text-xs font-medium">Jumlah Dibayar</Text>
-              <InputNumber
+              <Input
                 size="middle"
-                className="w-36"
-                min={0}
+                className="w-36 text-right"
                 placeholder="0"
-                value={paidAmount}
-                onChange={(val) => setPaidAmount(val || 0)}
-                formatter={(val) => `Rp ${val}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                parser={(val: string | undefined) => (val ? Number(val.replace(/Rp\s?|(\.*)/g, '')) : 0) as any}
+                value={paidAmount ? `Rp ${paidAmount.toLocaleString('id-ID')}` : ''}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const val = e.target.value.replace(/\D/g, '');
+                  setPaidAmount(val ? parseInt(val, 10) : 0);
+                }}
               />
             </div>
 

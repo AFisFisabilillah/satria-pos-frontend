@@ -96,17 +96,17 @@ export const KasirPage = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden p-4 gap-4">
-        {/* Left Column - Catalog */}
-        <div className="flex-1 flex flex-col h-full min-w-0">
-          <ProductCatalog />
-        </div>
-
-        {/* Right Column - Checkout Panel (Desktop) */}
+        {/* Left Column - Checkout Panel / Selected Products (Desktop) */}
         {!isMobile && (
           <div className="w-96 flex flex-col h-full shrink-0">
             <CheckoutSummary />
           </div>
         )}
+
+        {/* Right Column - Catalog */}
+        <div className="flex-1 flex flex-col h-full min-w-0">
+          <ProductCatalog />
+        </div>
       </div>
 
       {/* Floating Bottom Bar for Mobile */}
