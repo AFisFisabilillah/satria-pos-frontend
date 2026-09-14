@@ -9,8 +9,7 @@ import {
   Typography,
   Modal,
   Tag,
-  Spin,
-  Collapse
+  Spin
 } from 'antd';
 import {
   PlusOutlined,
@@ -137,136 +136,111 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
 
   return (
     <div className="flex flex-col h-full justify-between bg-white dark:bg-[#141414] rounded-xl border border-slate-200 dark:border-[#202020] p-4 shadow-sm">
-      {/* Header / Member & Voucher Accordion Section */}
-      <div className="pb-3 border-b border-slate-100 dark:border-[#202020]">
-        <Collapse
-          ghost
-          size="small"
-          className="bg-transparent!"
-          items={[
-            {
-              key: 'member',
-              label: (
-                <div className="flex items-center justify-between w-full pr-2">
-                  <div className="flex items-center gap-2">
-                    <UserOutlined className="text-[#ff6a00]" />
-                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-                      Member {selectedMemberId ? `(Terpilih)` : '(Opsional)'}
-                    </span>
-                  </div>
-                  {selectedMemberId && (
-                    <Tag color="orange" className="m-0 text-[10px]">
-                      {membersData?.data?.find((m) => m.id === selectedMemberId)?.name || '1 Member'}
-                    </Tag>
-                  )}
+      {/* Member & Voucher Form Section */}
+      <div className="pb-3 border-b border-slate-100 dark:border-[#202020] flex flex-col gap-3">
+        {/* Member Select */}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <UserOutlined className="text-[#ff6a00]" />
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                Member {selectedMemberId ? '(Terpilih)' : '(Opsional)'}
+              </span>
+            </div>
+            <Button
+              type="link"
+              size="small"
+              icon={<PlusOutlined />}
+              onClick={() => setIsMemberModalOpen(true)}
+              className="p-0 text-xs text-[#ff6a00] hover:text-[#e55e00]"
+            >
+              Tambah Baru
+            </Button>
+          </div>
+          <Select
+            showSearch
+            allowClear
+            placeholder="Cari Member..."
+            loading={isMembersLoading}
+            value={selectedMemberId}
+            onChange={setSelectedMemberId}
+            onSearch={setMemberSearch}
+            filterOption={false}
+            className="w-full"
+            options={membersData?.data?.map((m) => ({
+              label: `${m.name} (${m.phone || '-'})`,
+              value: m.id,
+            }))}
+            dropdownRender={(menu) => (
+              <>
+                {menu}
+                <Divider style={{ margin: '8px 0' }} />
+                <div className="p-1">
+                  <Button
+                    type="text"
+                    block
+                    icon={<PlusOutlined />}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => setIsMemberModalOpen(true)}
+                    className="text-[#ff6a00] hover:text-[#e55e00] text-left font-medium"
+                  >
+                    Tambah Member Baru
+                  </Button>
                 </div>
-              ),
-              children: (
-                <div className="flex flex-col gap-2 pt-1">
-                  <div className="flex justify-end">
-                    <Button
-                      type="link"
-                      size="small"
-                      icon={<PlusOutlined />}
-                      onClick={() => setIsMemberModalOpen(true)}
-                      className="p-0 text-xs text-[#ff6a00] hover:text-[#e55e00]"
-                    >
-                      Tambah Member Baru
-                    </Button>
-                  </div>
-                  <Select
-                    showSearch
-                    allowClear
-                    placeholder="Cari Member..."
-                    loading={isMembersLoading}
-                    value={selectedMemberId}
-                    onChange={setSelectedMemberId}
-                    onSearch={setMemberSearch}
-                    filterOption={false}
-                    className="w-full"
-                    options={membersData?.data?.map((m) => ({
-                      label: `${m.name} (${m.phone || '-'})`,
-                      value: m.id,
-                    }))}
-                    dropdownRender={(menu) => (
-                      <>
-                        {menu}
-                        <Divider style={{ margin: '8px 0' }} />
-                        <div className="p-1">
-                          <Button
-                            type="text"
-                            block
-                            icon={<PlusOutlined />}
-                            onMouseDown={(e) => e.preventDefault()}
-                            onClick={() => setIsMemberModalOpen(true)}
-                            className="text-[#ff6a00] hover:text-[#e55e00] text-left font-medium"
-                          >
-                            Tambah Member Baru
-                          </Button>
-                        </div>
-                      </>
-                    )}
-                    notFoundContent={
-                      isMembersLoading ? (
-                        <div className="flex justify-center p-2"><Spin size="small" /></div>
-                      ) : (
-                        <div className="p-2 flex flex-col gap-2 text-center">
-                          <Text type="secondary">
-                            {memberSearch ? `Member "${memberSearch}" tidak ditemukan.` : 'Tidak ada member.'}
-                          </Text>
-                          <Button
-                            type="dashed"
-                            size="small"
-                            onMouseDown={(e) => e.preventDefault()}
-                            onClick={() => setIsMemberModalOpen(true)}
-                          >
-                            Tambah Member Baru
-                          </Button>
-                        </div>
-                      )
-                    }
-                  />
+              </>
+            )}
+            notFoundContent={
+              isMembersLoading ? (
+                <div className="flex justify-center p-2"><Spin size="small" /></div>
+              ) : (
+                <div className="p-2 flex flex-col gap-2 text-center">
+                  <Text type="secondary">
+                    {memberSearch ? `Member "${memberSearch}" tidak ditemukan.` : 'Tidak ada member.'}
+                  </Text>
+                  <Button
+                    type="dashed"
+                    size="small"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => setIsMemberModalOpen(true)}
+                  >
+                    Tambah Member Baru
+                  </Button>
                 </div>
-              ),
-            },
-            {
-              key: 'voucher',
-              label: (
-                <div className="flex items-center justify-between w-full pr-2">
-                  <div className="flex items-center gap-2">
-                    <GiftOutlined className="text-[#ff6a00]" />
-                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-                      Voucher {selectedVouchers.length > 0 ? `(${selectedVouchers.length})` : '(Opsional)'}
-                    </span>
-                  </div>
-                  {selectedVouchers.length > 0 && (
-                    <Tag color="green" className="m-0 text-[10px]">
-                      Diskon Rp {discountAmount.toLocaleString('id-ID')}
-                    </Tag>
-                  )}
-                </div>
-              ),
-              children: (
-                <div className="pt-1">
-                  <Select
-                    mode="multiple"
-                    allowClear
-                    placeholder="Pilih Voucher..."
-                    loading={isVouchersLoading}
-                    value={selectedVouchers.map((v) => v.id)}
-                    onChange={handleVoucherChange}
-                    className="w-full"
-                    maxTagCount="responsive"
-                    options={activeVouchers.map((v) => ({
-                      label: `${v.name} (${v.type === 'percent' ? `${v.value}%` : `Rp ${Number(v.value).toLocaleString('id-ID')}`})`,
-                      value: v.id,
-                    }))}
-                  />
-                </div>
-              ),
-            },
-          ]}
-        />
+              )
+            }
+          />
+        </div>
+
+        {/* Voucher Select */}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <GiftOutlined className="text-[#ff6a00]" />
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                Voucher {selectedVouchers.length > 0 ? `(${selectedVouchers.length})` : '(Opsional)'}
+              </span>
+            </div>
+            {selectedVouchers.length > 0 && (
+              <Tag color="green" className="m-0 text-[10px]">
+                Diskon Rp {discountAmount.toLocaleString('id-ID')}
+              </Tag>
+            )}
+          </div>
+          <Select
+            mode="multiple"
+            allowClear
+            placeholder="Pilih Voucher..."
+            loading={isVouchersLoading}
+            value={selectedVouchers.map((v) => v.id)}
+            onChange={handleVoucherChange}
+            className="w-full"
+            maxTagCount="responsive"
+            options={activeVouchers.map((v) => ({
+              label: `${v.name} (${v.type === 'percent' ? `${v.value}%` : `Rp ${Number(v.value).toLocaleString('id-ID')}`})`,
+              value: v.id,
+            }))}
+          />
+        </div>
       </div>
 
       {/* Summary Footer & Payment */}
@@ -278,9 +252,33 @@ export const CheckoutSummary = ({ onSuccessTransaction }: CheckoutSummaryProps) 
             <span>Rp {subtotal.toLocaleString('id-ID')}</span>
           </div>
 
-          {discountAmount > 0 && (
-            <div className="flex justify-between text-green-600 font-medium">
-              <span>Diskon Voucher</span>
+          {selectedVouchers.map((voucher) => {
+            const isMinPurchaseNotMet = voucher.min_purchase && subtotal < voucher.min_purchase;
+            const voucherDiscount = isMinPurchaseNotMet
+              ? 0
+              : voucher.type === 'percent'
+              ? (subtotal * voucher.value) / 100
+              : voucher.value;
+
+            return (
+              <div key={voucher.id} className="flex justify-between items-center text-xs text-green-600 pl-2 border-l-2 border-green-500">
+                <div className="flex flex-col">
+                  <span className="font-medium">{voucher.name}</span>
+                  <span className="text-[10px] text-slate-400">
+                    {voucher.type === 'percent' ? `Diskon ${voucher.value}%` : `Diskon Rp ${Number(voucher.value).toLocaleString('id-ID')}`}
+                    {isMinPurchaseNotMet && ` (Min. belanja Rp ${Number(voucher.min_purchase).toLocaleString('id-ID')})`}
+                  </span>
+                </div>
+                <span className="font-semibold">
+                  {isMinPurchaseNotMet ? 'Rp 0' : `-Rp ${voucherDiscount.toLocaleString('id-ID')}`}
+                </span>
+              </div>
+            );
+          })}
+
+          {selectedVouchers.length > 1 && discountAmount > 0 && (
+            <div className="flex justify-between text-green-600 font-bold text-xs pt-1 border-t border-dashed border-green-200 dark:border-green-900">
+              <span>Total Diskon Voucher</span>
               <span>-Rp {discountAmount.toLocaleString('id-ID')}</span>
             </div>
           )}

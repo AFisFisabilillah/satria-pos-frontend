@@ -1,9 +1,8 @@
 import { useState, useMemo } from 'react';
-import { AutoComplete, Input, Card, Empty, Select, App, Button, InputNumber, Popconfirm } from 'antd';
+import { AutoComplete, Card, Empty, App, Button, InputNumber, Popconfirm, Tag } from 'antd';
 import { SearchOutlined, ShoppingCartOutlined, PlusOutlined, MinusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useDebounce } from 'use-debounce';
 import { useProducts } from '../../hooks/useProducts';
-import { useCategories } from '../../hooks/useCategories';
 import { useCartStore } from '../../store/useCartStore';
 import type { Product } from '../../types/product';
 
@@ -11,14 +10,11 @@ export const ProductCatalog = () => {
   const { message } = App.useApp();
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 400);
-  const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
 
   const { data: productsData } = useProducts({
     search: debouncedSearch || undefined,
     size: 50,
   });
-
-  const { data: categoriesData } = useCategories();
 
   const cart = useCartStore((state) => state.cart);
   const addItem = useCartStore((state) => state.addItem);
@@ -43,38 +39,52 @@ export const ProductCatalog = () => {
 
   const allProducts = productsData?.data || [];
 
-  // Dropdown options with product image
+  // Dropdown options with product image & status badges
   const searchOptions = useMemo(() => {
     if (!search.trim()) return [];
     const query = search.toLowerCase();
     return allProducts
       .filter((p) => p.name.toLowerCase().includes(query) || p.code?.toLowerCase().includes(query))
-      .map((p) => ({
-        value: p.name,
-        label: (
-          <div className="flex items-center gap-3 py-1">
-            <div className="w-10 h-10 bg-slate-100 dark:bg-[#202020] rounded-lg overflow-hidden shrink-0 flex items-center justify-center border border-slate-200 dark:border-[#303030]">
-              {p.image ? (
-                <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
-              ) : (
-                <ShoppingCartOutlined className="text-slate-400 text-lg" />
-              )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{p.name}</div>
-              <div className="text-xs text-slate-500">
-                Stok: <span className={(p.quantity ?? 0) <= 0 ? 'text-red-500 font-bold' : ''}>{p.quantity ?? 0}</span>
+      .map((p) => {
+        const isOutOfStock = (p.quantity ?? 0) <= 0;
+        const isInactive = !p.active;
+        const isDisabled = isOutOfStock || isInactive;
+
+        return {
+          value: p.name,
+          disabled: isDisabled,
+          label: (
+            <div className={`flex items-center gap-3 py-1 ${isDisabled ? 'opacity-50' : ''}`}>
+              <div className="w-10 h-10 bg-slate-100 dark:bg-[#202020] rounded-lg overflow-hidden shrink-0 flex items-center justify-center border border-slate-200 dark:border-[#303030]">
+                {p.image ? (
+                  <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                ) : (
+                  <ShoppingCartOutlined className="text-slate-400 text-lg" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{p.name}</span>
+                  {isInactive ? (
+                    <Tag color="default" className="m-0 text-[10px] leading-tight">Nonaktif</Tag>
+                  ) : isOutOfStock ? (
+                    <Tag color="red" className="m-0 text-[10px] leading-tight">Stok Habis</Tag>
+                  ) : null}
+                </div>
+                <div className="text-xs text-slate-500">
+                  Stok: <span className={isOutOfStock ? 'text-red-500 font-bold' : ''}>{p.quantity ?? 0}</span>
+                </div>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="font-bold text-primary text-sm">
+                  Rp {(p.sale_price || 0).toLocaleString('id-ID')}
+                </span>
               </div>
             </div>
-            <div className="text-right shrink-0">
-              <span className="font-bold text-primary text-sm">
-                Rp {(p.sale_price || 0).toLocaleString('id-ID')}
-              </span>
-            </div>
-          </div>
-        ),
-        product: p,
-      }));
+          ),
+          product: p,
+        };
+      });
   }, [allProducts, search]);
 
   const handleSelectOption = (_: string, option: any) => {
@@ -100,21 +110,20 @@ export const ProductCatalog = () => {
 
   return (
     <div className="flex flex-col gap-4 h-full">
-      {/* Search & Category Filter */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      {/* Search Bar */}
+      <div className="flex gap-3">
         <AutoComplete
           options={searchOptions}
           onSelect={handleSelectOption}
           value={search}
           onChange={setSearch}
           placeholder="Cari nama atau kode produk... (Enter untuk tambah)"
-          className="flex-1"
+          className="w-full"
           size="large"
           onKeyDown={handleSearchKeyDown}
           prefix={<SearchOutlined className="text-slate-400" />}
           allowClear
-        >
-        </AutoComplete>
+        />
       </div>
 
       {/* Cart Grid Display */}
